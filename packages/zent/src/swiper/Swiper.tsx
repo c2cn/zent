@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Component, Children, cloneElement } from 'react';
 import cx from 'classnames';
 
@@ -16,7 +15,6 @@ function setStyle(target: any, styles: any) {
 
 export interface ISwiperProps {
   className?: string;
-  prefix?: string;
   transitionDuration?: number;
   autoplay?: boolean;
   autoplayInterval?: number;
@@ -27,6 +25,8 @@ export interface ISwiperProps {
   arrowsType?: 'dark' | 'light';
   onChange?: (current: number, prev: number | null) => void;
   children?: React.ReactNode;
+  renderPrevArrow?: (onPrev: () => void) => React.ReactNode;
+  renderNextArrow?: (onNext: () => void) => React.ReactNode;
 }
 
 export interface ISwiperState {
@@ -34,10 +34,31 @@ export interface ISwiperState {
   prevProps?: ISwiperProps;
 }
 
+const defaultRenderPrevArrow: ISwiperProps['renderPrevArrow'] = onPrev => {
+  return (
+    <div
+      className="zent-swiper__arrow zent-swiper__arrow-left"
+      onClick={onPrev}
+    >
+      <Icon type="right-circle" className="zent-swiper__arrow-icon" />
+    </div>
+  );
+};
+
+const defaultRenderNextArrow: ISwiperProps['renderNextArrow'] = onNext => {
+  return (
+    <div
+      className="zent-swiper__arrow zent-swiper__arrow-right"
+      onClick={onNext}
+    >
+      <Icon type="right-circle" className="zent-swiper__arrow-icon" />
+    </div>
+  );
+};
+
 export class Swiper extends Component<ISwiperProps, ISwiperState> {
   static defaultProps = {
     className: '',
-    prefix: 'zent',
     transitionDuration: 300,
     autoplay: false,
     autoplayInterval: 3000,
@@ -46,6 +67,8 @@ export class Swiper extends Component<ISwiperProps, ISwiperState> {
     dotsSize: 'normal',
     arrows: false,
     arrowsType: 'dark',
+    renderPrevArrow: defaultRenderPrevArrow,
+    renderNextArrow: defaultRenderNextArrow,
   };
 
   swiper!: HTMLDivElement;
@@ -308,18 +331,19 @@ export class Swiper extends Component<ISwiperProps, ISwiperState> {
   render() {
     const {
       className,
-      prefix,
       dots,
       dotsColor,
       dotsSize,
       arrows,
       arrowsType,
       children,
+      renderNextArrow,
+      renderPrevArrow,
     } = this.props;
     const { currentIndex } = this.state;
 
-    const classString = cx(`${prefix}-swiper`, className, {
-      [`${prefix}-swiper-light`]: arrows && arrowsType === 'light',
+    const classString = cx('zent-swiper', className, {
+      'zent-swiper-light': arrows && arrowsType === 'light',
     });
     const childrenCount = Children.count(children);
     const clonedChildren = this.cloneChildren(children);
@@ -331,32 +355,9 @@ export class Swiper extends Component<ISwiperProps, ISwiperState> {
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        {arrows && childrenCount > 1 && (
-          <div
-            className={`${prefix}-swiper__arrow ${prefix}-swiper__arrow-left`}
-            onClick={this.prev}
-          >
-            <Icon
-              type="right-circle"
-              className={`${prefix}-swiper__arrow-icon`}
-            />
-          </div>
-        )}
-        {arrows && childrenCount > 1 && (
-          <div
-            className={`${prefix}-swiper__arrow ${prefix}-swiper__arrow-right`}
-            onClick={this.next}
-          >
-            <Icon
-              type="right-circle"
-              className={`${prefix}-swiper__arrow-icon`}
-            />
-          </div>
-        )}
-        <div
-          ref={this.getSwiperContainer}
-          className={`${prefix}-swiper__container`}
-        >
+        {arrows && childrenCount > 1 && renderPrevArrow(this.prev)}
+        {arrows && childrenCount > 1 && renderNextArrow(this.next)}
+        <div ref={this.getSwiperContainer} className="zent-swiper__container">
           {Children.map(clonedChildren, (child: any, index: number) => {
             return cloneElement(child, {
               key: index - 1,
@@ -366,7 +367,6 @@ export class Swiper extends Component<ISwiperProps, ISwiperState> {
         </div>
         {dots && childrenCount > 1 && (
           <SwiperDots
-            prefix={prefix}
             dotsColor={dotsColor}
             dotsSize={dotsSize}
             items={children}

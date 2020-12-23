@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { AutoComplete } from '../src/auto-complete';
@@ -84,7 +83,7 @@ it('disabled children', () => {
       document.querySelectorAll('#root > .zent-rate.zent-rate-disabled').length
     ).toBe(1);
     expect(
-      document.querySelectorAll('#root > .zent-select-disabled').length
+      document.querySelectorAll('#root > .zent-select-v2-disabled').length
     ).toBe(1);
     expect(
       document.querySelectorAll('#root > .zent-slider.zent-slider-disabled')
@@ -179,7 +178,7 @@ it('self props has a higher priority', () => {
       document.querySelectorAll('#root > .zent-rate.zent-rate-disabled').length
     ).toBe(0);
     expect(
-      document.querySelectorAll('#root > .zent-select.disabled').length
+      document.querySelectorAll('#root > .zent-select-v2.disabled').length
     ).toBe(0);
     expect(
       document.querySelectorAll('#root > .zent-slider.zent-slider-disabled')

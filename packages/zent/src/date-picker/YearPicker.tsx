@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useContext, useCallback } from 'react';
 import { I18nReceiver as Receiver, II18nLocaleTimePicker } from '../i18n';
 import SinglePicker from './components/SinglePickerBase';
 import YearPanel from './panels/year-panel';
@@ -8,19 +8,28 @@ import { DisabledContext } from '../disabled';
 import { getCallbackValueWithDate } from './utils/getValueInSinglePicker';
 import { dateConfig } from './utils/dateUtils';
 import { formatText } from './utils/formatInputText';
-import { ISingleProps, IGenerateDateConfig } from './types';
+import {
+  ISingleProps,
+  IGenerateDateConfig,
+  IValueType,
+  ISingleRelatedType,
+} from './types';
 import { YEAR_FORMAT, defaultDatePickerCommonProps } from './constants';
 
 const generateDate: IGenerateDateConfig = dateConfig.year;
 const PickerContextProvider = PickerContext.Provider;
 
-export interface IYearPickerProps extends ISingleProps {}
+export interface IYearPickerProps<T extends IValueType = 'string'>
+  extends Omit<ISingleProps, 'valueType' | 'onChange'>,
+    ISingleRelatedType<T> {}
 const DefaultYearPickerProps = {
   format: YEAR_FORMAT,
 };
 
-export const YearPicker: React.FC<IYearPickerProps> = props => {
-  const disabledContext = React.useContext(DisabledContext);
+export const YearPicker = <T extends IValueType = 'string'>(
+  props: IYearPickerProps<T>
+) => {
+  const disabledContext = useContext(DisabledContext);
   const propsRequired = {
     ...defaultDatePickerCommonProps,
     ...DefaultYearPickerProps,
@@ -34,14 +43,14 @@ export const YearPicker: React.FC<IYearPickerProps> = props => {
     disabled = disabledContext.value,
   } = propsRequired;
 
-  const getInputText = React.useCallback(
+  const getInputText = useCallback(
     (val: Date | null) => formatText(val, format),
     [format]
   );
 
-  const getSelectedValue = React.useCallback((val: Date) => val, []);
+  const getSelectedValue = useCallback((val: Date) => val, []);
 
-  const getCallbackValue = React.useCallback(
+  const getCallbackValue = useCallback(
     (val: Date) => getCallbackValueWithDate(val, valueType, format),
     [valueType, format]
   );

@@ -1,8 +1,7 @@
 /**
  * AutoComplete
  */
-import * as React from 'react';
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import cn from 'classnames';
 import { Omit } from 'utility-types';
 
@@ -65,7 +64,6 @@ export class AutoComplete<Value> extends Component<
   IAutoCompleteState
 > {
   static defaultProps = {
-    prefix: 'zent',
     filterOption: caselessMatchFilterOption,
     valueFromOptions: false,
     valueField: 'value',
@@ -78,7 +76,7 @@ export class AutoComplete<Value> extends Component<
   context!: IDisabledContext;
 
   blurHandlerPrevented = false;
-  refMenuItemList = React.createRef<SelectMenu>();
+  refMenuItemList = createRef<SelectMenu>();
 
   constructor(props: IAutoCompleteProps<Value>) {
     super(props);

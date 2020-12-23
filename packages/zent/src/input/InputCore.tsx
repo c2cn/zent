@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { forwardRef } from 'react';
 
 import Icon from '../icon';
 import { IInputCoreProps } from './types';
@@ -10,7 +10,7 @@ function preventDefault(e: React.MouseEvent<HTMLElement>) {
 
 const useIMEComposition = createUseIMEComposition();
 
-export const InputCore = React.forwardRef<
+export const InputCore = forwardRef<
   HTMLInputElement,
   IInputCoreProps & { onClear: React.MouseEventHandler<HTMLElement> }
 >((props, ref) => {
@@ -48,6 +48,10 @@ export const InputCore = React.forwardRef<
     onCompositionEndProp
   );
 
+  // No clear button when input is disabled or readonly
+  const showClearIcon =
+    showClear && valueProp && !otherProps.disabled && !otherProps.readOnly;
+
   return (
     <>
       {addonBefore && (
@@ -62,7 +66,7 @@ export const InputCore = React.forwardRef<
         onCompositionStart={onCompositionStart}
         onCompositionEnd={onCompositionEnd}
       />
-      {showClear && valueProp && (
+      {showClearIcon && (
         <Icon
           className="zent-input-close"
           type="close-circle"

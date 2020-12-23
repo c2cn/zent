@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Component } from 'react';
 import classNames from 'classnames';
 import memoize from '../utils/memorize-one';
@@ -16,14 +15,12 @@ export interface ICheckboxGroupProps<Value> {
   onChange?: (values: Value[]) => void;
   className?: string;
   style?: React.CSSProperties;
-  prefix: string;
 }
 
 export class CheckboxGroup<Value> extends Component<
   ICheckboxGroupProps<Value>
 > {
   static defaultProps = {
-    prefix: 'zent',
     isValueEqual: Object.is,
     value: [],
   };
@@ -38,7 +35,7 @@ export class CheckboxGroup<Value> extends Component<
       readOnly: boolean,
       isValueEqual: (value1: Value, value2: Value) => boolean
     ) => {
-      let value;
+      let value: Value[];
       if (Array.isArray(maybeValue)) {
         value = maybeValue;
       } else {
@@ -72,7 +69,6 @@ export class CheckboxGroup<Value> extends Component<
   render() {
     const {
       className,
-      prefix,
       style,
       children,
       value,
@@ -81,12 +77,7 @@ export class CheckboxGroup<Value> extends Component<
       isValueEqual,
     } = this.props;
 
-    const classString = classNames(
-      {
-        [`${prefix}-checkbox-group`]: true,
-      },
-      className
-    );
+    const classString = classNames('zent-checkbox-group', className);
 
     return (
       <GroupContextProvider

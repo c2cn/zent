@@ -33,6 +33,8 @@ module.exports = {
     'react/destructuring-assignment': 0,
     'react/button-has-type': 0,
     'react/no-access-state-in-setstate': 0,
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
     'no-param-reassign': 0,
     'no-return-assign': 0,
     'no-underscore-dangle': [
@@ -44,6 +46,7 @@ module.exports = {
     'consistent-return': 0,
     'no-unused-expressions': 0,
     'prefer-template': 1,
+    'no-nested-ternary': 'error',
     'no-plusplus': 0,
     'no-multi-assign': 0,
     'no-useless-escape': 0,

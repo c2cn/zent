@@ -1,4 +1,3 @@
-import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Component, createRef } from 'react';
 import { Omit } from 'utility-types';
@@ -122,9 +121,9 @@ export function openDialog(options: Partial<IOpenDialogOption> = {}) {
   const container = createElement('div');
 
   // 确保多次调用close不会报错
-  const closeHandler = (evt: unknown) => {
+  const closeHandler = (triggerOnClose = true) => {
     closeDialog(dialogId, {
-      triggerOnClose: evt !== false,
+      triggerOnClose: triggerOnClose !== false,
     });
   };
 

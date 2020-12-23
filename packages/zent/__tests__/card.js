@@ -1,6 +1,5 @@
-import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import Card from 'card';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -41,18 +40,5 @@ describe('Card', () => {
     const card = shallow(<Card bodyStyle={{ background: 'blue' }} />);
     const cardBody = card.find('.zent-card-body');
     expect(cardBody.prop('style').background).toBe('blue');
-  });
-  it('should change card class prefix by prefix', () => {
-    const card = shallow(
-      <Card prefix="customize" title="card title">
-        <p>card item</p>
-      </Card>
-    );
-    expect(card.find('.customize-card').length).toBe(1);
-    expect(card.find('.zent-card').length).toBe(0);
-    expect(card.find('.customize-card-header').length).toBe(1);
-    expect(card.find('.zent-card-header').length).toBe(0);
-    expect(card.find('.customize-card-body').length).toBe(1);
-    expect(card.find('.zent-card-body').length).toBe(0);
   });
 });

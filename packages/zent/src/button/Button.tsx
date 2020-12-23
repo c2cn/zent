@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { Component } from 'react';
+
 import { Omit } from 'utility-types';
 import Group from './Group';
 import { IButtonDirectiveProps, ButtonDirective } from './Directive';
@@ -17,7 +18,7 @@ export interface IButtonProps
   download?: string;
 }
 
-export class Button extends React.Component<IButtonProps> {
+export class Button extends Component<IButtonProps> {
   static defaultProps = {
     type: 'default',
     size: 'medium',
@@ -45,25 +46,6 @@ export class Button extends React.Component<IButtonProps> {
       download,
       ...props
     } = this.props;
-    let child: React.ReactElement<IButtonProps>;
-    if (href || target) {
-      child = (
-        <a
-          href={disabled || loading ? undefined : href || ''}
-          target={target}
-          download={download}
-          {...props}
-        >
-          {children}
-        </a>
-      );
-    } else {
-      child = (
-        <button type={htmlType} disabled={!!(disabled || loading)} {...props}>
-          {children}
-        </button>
-      );
-    }
 
     return (
       <ButtonDirective
@@ -76,7 +58,15 @@ export class Button extends React.Component<IButtonProps> {
         bordered={bordered}
         icon={icon}
       >
-        {child}
+        {href || target ? (
+          <a href={href || ''} target={target} download={download} {...props}>
+            {children}
+          </a>
+        ) : (
+          <button type={htmlType} {...props}>
+            {children}
+          </button>
+        )}
       </ButtonDirective>
     );
   }

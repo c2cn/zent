@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import {
   renderIntoDocument,
   findRenderedDOMComponentWithTag,
@@ -7,7 +7,7 @@ import {
 import { Button, ButtonGroup, ButtonDirective } from 'button';
 import Icon from 'icon';
 
-class Wrapper extends React.Component {
+class Wrapper extends Component {
   render() {
     return this.props.children;
   }
@@ -156,7 +156,8 @@ describe('<Button />', () => {
     );
     const buttonNode = findRenderedDOMComponentWithTag(tree, 'a');
     expect(buttonNode.classList.contains('zent-btn-disabled')).toBe(true);
-    expect(buttonNode.href).toBe('');
+    /** call event.preventDefault within `onClick` callback */
+    expect(buttonNode.href).toBe('http://youzan.com/');
     Simulate.click(buttonNode);
     expect(isClicked).toBe(false);
   });
@@ -194,7 +195,8 @@ describe('<Button />', () => {
     const buttonNode = findRenderedDOMComponentWithTag(tree, 'a');
     expect(buttonNode.classList.contains('zent-btn-loading')).toBe(true);
     expect(buttonNode.classList.contains('zent-btn-disabled')).toBe(false);
-    expect(buttonNode.href).toBe('');
+    /** call event.preventDefault within `onClick` callback */
+    expect(buttonNode.href).toBe('http://youzan.com/');
     Simulate.click(buttonNode);
     expect(isClicked).toBe(false);
   });

@@ -20,14 +20,15 @@ Our goal is making React development faster and simpler.
 
 ### Supported Environments
 
-* React >= 16.8
+* React >= 17
 * Supports server-side rendering(SSR)
 
 ### Browsers
 
-* Firefox >= 52(ESR)
+* Firefox >= 78(ESR)
 * Chrome >= 49
-* Safari >= 9.1
+* Safari >= 10
+* Edge
 * No IE support
 
 #### Polyfills needed for supported browsers

@@ -1,5 +1,5 @@
-import * as React from 'react';
 import cx from 'classnames';
+import { Children } from 'react';
 
 import noop from '../utils/noop';
 import CommonMenu from './CommonMenu';
@@ -19,7 +19,6 @@ export interface IMenuProps {
   defaultSelectedKey?: string;
   inlineIndent?: number;
   className?: string;
-  prefix?: string;
 }
 
 export class Menu extends CommonMenu<IMenuProps, any> {
@@ -28,7 +27,6 @@ export class Menu extends CommonMenu<IMenuProps, any> {
   static SubMenu = SubMenu;
 
   static defaultProps = {
-    prefix: 'zent',
     onClick: noop,
     mode: 'pop',
     inlineIndent: 24,
@@ -84,15 +82,15 @@ export class Menu extends CommonMenu<IMenuProps, any> {
   };
 
   render() {
-    const { children, prefix, className, style, mode } = this.props;
+    const { children, className, style, mode } = this.props;
     const isInline = mode === 'inline';
-    const classString = cx(`${prefix}-menu`, className, {
-      [`${prefix}-menu__inline`]: isInline,
+    const classString = cx('zent-menu', className, {
+      'zent-menu__inline': isInline,
     });
 
     return (
       <ul className={classString} style={style}>
-        {React.Children.map(children, this.renderMenuItem)}
+        {Children.map(children, this.renderMenuItem)}
       </ul>
     );
   }

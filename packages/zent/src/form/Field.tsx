@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+
 import {
   useField,
   Validators,
@@ -33,6 +34,19 @@ function withDefaultOption(option: ValidateOption | null | undefined) {
   return option ?? ValidateOption.Default;
 }
 
+/**
+ * 为 model 设置初始值，初始值会被作为 effect 的依赖，谨慎使用字面量
+ * @param model
+ * @param initialValue
+ */
+export function useInitialValue<T>(model: FieldModel<T>, initialValue?: T) {
+  useEffect(() => {
+    if (initialValue !== undefined) {
+      model.initialize(initialValue);
+    }
+  }, [model, initialValue]);
+}
+
 function getValidators<Value>({
   validators,
   required,
@@ -56,10 +70,19 @@ function getValidators<Value>({
 export function FormField<Value>(props: IFormFieldProps<Value>) {
   let model: FieldModel<Value>;
   if (isViewDrivenProps(props)) {
-    const { name, defaultValue, destroyOnUnmount } = props;
+    const {
+      name,
+      defaultValue,
+      destroyOnUnmount,
+      normalizeBeforeSubmit,
+    } = props;
     // eslint-disable-next-line react-hooks/rules-of-hooks
     model = useField<Value>(name, defaultValue, getValidators(props));
     model.destroyOnUnmount = Boolean(destroyOnUnmount);
+
+    if (typeof normalizeBeforeSubmit === 'function') {
+      model.normalizeBeforeSubmit = normalizeBeforeSubmit;
+    }
   } else if (isModelRef(props.model)) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     model = useField(
@@ -71,7 +94,10 @@ export function FormField<Value>(props: IFormFieldProps<Value>) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     model = useField<Value>(props.model);
   }
-  React.useImperativeHandle(props.modelRef, () => model, [model]);
+
+  useInitialValue(model, props.initialValue);
+
+  useImperativeHandle(props.modelRef, () => model, [model]);
   const {
     className,
     style,
@@ -91,21 +117,23 @@ export function FormField<Value>(props: IFormFieldProps<Value>) {
     withoutLabel,
     touchWhen = TouchWhen.Change,
   } = props;
-  const anchorRef = React.useRef<HTMLDivElement | null>(null);
+  const anchorRef = useRef<HTMLDivElement | null>(null);
   useFormChild(model, anchorRef);
-  const normalizer = React.useCallback(
+  const normalizer = useCallback(
     (value: Value) => {
       const prevValue = model.value;
       return normalize(value, prevValue);
     },
     [model, normalize]
   );
-  const setValue = React.useCallback(value => (model.value = value), [model]);
+  const setValue = useCallback(value => (model.value = value), [model]);
   const defaultOnChangeHandler = FieldUtils.makeChangeHandler(
     model,
     withDefaultOption(getValidateOption('change')),
     props.onChange
   );
+
+  const onChangeProps = props.onChange;
   const onChange = FieldUtils.useMulti(
     () => {
       if (touchWhen === TouchWhen.Change) {
@@ -118,12 +146,21 @@ export function FormField<Value>(props: IFormFieldProps<Value>) {
         ? defaultOnChangeHandler
         : (value: Value) => {
             setValue(value);
-            props.onChange?.(value);
+            onChangeProps?.(value);
           }
     ),
-    [model, touchWhen, normalizer, validateOccasion, defaultOnChangeHandler]
+    [
+      model,
+      touchWhen,
+      normalizer,
+      validateOccasion,
+      defaultOnChangeHandler,
+      onChangeProps,
+    ]
   );
-  const onBlur = React.useCallback(
+
+  const onBlurProps = props.onBlur;
+  const onBlur = useCallback(
     (e: React.FocusEvent) => {
       if (touchWhen === TouchWhen.Blur) {
         model.isTouched = true;
@@ -131,9 +168,9 @@ export function FormField<Value>(props: IFormFieldProps<Value>) {
       if (validateOccasion & ValidateOccasion.Blur) {
         model.validate(getValidateOption('blur'));
       }
-      props.onBlur?.(e);
+      onBlurProps?.(e);
     },
-    [getValidateOption, validateOccasion, touchWhen, model, props.onBlur]
+    [getValidateOption, validateOccasion, touchWhen, model, onBlurProps]
   );
   const {
     onCompositionStart,

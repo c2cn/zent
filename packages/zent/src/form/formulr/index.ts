@@ -11,6 +11,10 @@ export * from './models';
 export * from './validate';
 export * from './context';
 export * from './hooks';
-export * from './value-listener';
+export * from './listeners';
 export * from './maybe';
+export {
+  UnknownFieldSetModelChildren,
+  UnknownFieldSetBuilderChildren,
+} from './utils';
 export { Validators, FieldUtils, ValidatorMiddlewares };

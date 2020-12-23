@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Children } from 'react';
 import cx from 'classnames';
 
 import CommonMenu from './CommonMenu';
@@ -24,17 +24,17 @@ export default class PopupMenu extends CommonMenu<any, any> {
   };
 
   render() {
-    const { children, prefix, visible, overlayCx } = this.props;
+    const { children, visible, overlayCx } = this.props;
     if (!visible) {
       return null;
     }
 
     return (
       <ul
-        className={cx(`${prefix}-menu`, `${prefix}-submenu-content`, overlayCx)}
+        className={cx('zent-menu', 'zent-submenu-content', overlayCx)}
         onClick={this.onSubMenuClick}
       >
-        {React.Children.map(children, this.renderSubMenuItems)}
+        {Children.map(children, this.renderSubMenuItems)}
       </ul>
     );
   }

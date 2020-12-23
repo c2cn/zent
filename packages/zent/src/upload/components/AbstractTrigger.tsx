@@ -1,15 +1,15 @@
-import * as React from 'react';
-
+import { PureComponent, createRef } from 'react';
 import FileInput from './FileInput';
 
 import Notify from '../../notify';
 import { IAbstractUploadTriggerProps, IUploadFileItem } from '../types';
 import { formatFileSize } from '../utils/format-file-size';
+import { execPromiseQueue } from '../../utils/promise-queue';
 
 abstract class AbstractTrigger<
   UPLOAD_ITEM extends IUploadFileItem
-> extends React.PureComponent<IAbstractUploadTriggerProps<UPLOAD_ITEM>> {
-  fileInputRef = React.createRef<FileInput>();
+> extends PureComponent<IAbstractUploadTriggerProps<UPLOAD_ITEM>> {
+  fileInputRef = createRef<FileInput>();
 
   /**
    * 点击 file input 标签，打开文件选择对话框
@@ -61,9 +61,7 @@ abstract class AbstractTrigger<
       return this.onOverMaxSize(overMaxSizeFiles);
     }
 
-    files.forEach(file => {
-      this.props.onAddFile(file);
-    });
+    execPromiseQueue(files, file => this.props.onAddFile(file));
   };
 
   protected onTriggerDragOver: React.DragEventHandler = e => {

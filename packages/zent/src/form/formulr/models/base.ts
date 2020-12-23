@@ -2,7 +2,8 @@ import { IMaybeError, IValidators, ValidateOption } from '../validate';
 import { FormModel } from './form';
 
 export interface IModel<Value> {
-  getRawValue(): any;
+  readonly id: string;
+  getRawValue(): Value;
   getSubmitValue(): any;
   pristine(): boolean;
   touched(): boolean;
@@ -15,7 +16,7 @@ export interface IModel<Value> {
   initialize(value: Value): void;
   error: IMaybeError<Value>;
   owner: IModel<any> | null;
-  form: FormModel<any> | null | undefined;
+  form: FormModel | null | undefined;
   dispose(): void;
   validators: IValidators<Value>;
 }

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Component } from 'react';
 import cx from 'classnames';
 import { DisabledContext, IDisabledContext } from '../disabled';
@@ -17,7 +16,6 @@ export interface ISwitchProps {
 export class Switch extends Component<ISwitchProps> {
   static defaultProps = {
     size: 'default',
-    prefix: 'zent',
   };
 
   static contextType = DisabledContext;

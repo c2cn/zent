@@ -1,8 +1,10 @@
-import * as React from 'react';
 import cx from 'classnames';
+import { useCallback, useEffect, useState } from 'react';
+
 import BlockLoading from '../loading/BlockLoading';
 import { Waypoint, IWaypointCallbackData, WaypointPosition } from '../waypoint';
 import isBrowser from '../utils/isBrowser';
+import { useMounted } from '../utils/hooks/useMounted';
 
 export interface IInfiniteScrollerProps {
   className?: string;
@@ -24,13 +26,16 @@ export const InfiniteScroller: React.FC<IInfiniteScrollerProps> = ({
   className,
   children,
 }) => {
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const mounted = useMounted();
 
-  const stopLoading = React.useCallback(() => {
-    setLoading(false);
-  }, []);
+  const stopLoading = useCallback(() => {
+    if (mounted.current) {
+      setLoading(false);
+    }
+  }, [mounted]);
 
-  const load = React.useCallback(() => {
+  const load = useCallback(() => {
     if (typeof loadMore !== 'function') {
       return;
     }
@@ -43,7 +48,7 @@ export const InfiniteScroller: React.FC<IInfiniteScrollerProps> = ({
     }
   }, [loadMore, stopLoading]);
 
-  const onEnter = React.useCallback(
+  const onEnter = useCallback(
     (data: IWaypointCallbackData) => {
       if (loading) {
         return;
@@ -58,7 +63,7 @@ export const InfiniteScroller: React.FC<IInfiniteScrollerProps> = ({
   );
 
   // Run once after mount
-  React.useEffect(() => {
+  useEffect(() => {
     if (!skipLoadOnMount) {
       load();
     }

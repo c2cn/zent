@@ -1,6 +1,5 @@
-import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import { PureComponent } from 'react';
+import { createRef, PureComponent } from 'react';
 import classnames from 'classnames';
 import isEqual from '../utils/isEqual';
 
@@ -48,6 +47,7 @@ import {
 } from './types';
 import { ICheckboxEvent } from '../checkbox';
 import isBrowser from '../utils/isBrowser';
+import { IBlockLoadingProps } from '../loading/props';
 
 function stopPropagation(e: React.MouseEvent) {
   e.stopPropagation();
@@ -58,9 +58,10 @@ function stopPropagation(e: React.MouseEvent) {
 
 const prefix = 'zent';
 
-export interface IGridProps<Data = any> {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export interface IGridProps<Data = any, RowProps = {}> {
   columns: IGridColumn[];
-  datasets: Data[];
+  datasets: ReadonlyArray<Data>;
   rowKey?: string;
   onChange?: (conf: IGridOnChangeConfig) => any;
   scroll?: IGridScrollDelta;
@@ -80,14 +81,15 @@ export interface IGridProps<Data = any> {
   ellipsis?: boolean;
   onExpand?: IGridOnExpandHandler<Data>;
   components?: {
-    row?: React.ComponentType;
+    row?: React.ComponentType<RowProps>;
   };
-  rowProps?: (data: Data, index: number) => any;
+  rowProps?: (data: Data, index: number) => RowProps;
   batchRender?: IGridBatchRender;
   stickyBatch?: boolean;
   autoStick?: boolean;
   autoStickOffsetTop?: number;
   disableHoverHighlight?: boolean; // scroll时hover每次都会重绘，提供属性去禁用，这时hover就没有样式了
+  loadingProps?: Omit<IBlockLoadingProps, 'loading'>;
 }
 
 export interface IGridState {
@@ -105,8 +107,9 @@ export interface IGridInnerColumn<Data> extends IGridColumn<Data> {
   key?: string;
 }
 
-export class Grid<Data = any> extends PureComponent<
-  IGridProps<Data>,
+// eslint-disable-next-line @typescript-eslint/ban-types
+export class Grid<Data = any, RowProps = {}> extends PureComponent<
+  IGridProps<Data, RowProps>,
   IGridState
 > {
   static defaultProps: Partial<IGridProps> = {
@@ -137,22 +140,22 @@ export class Grid<Data = any> extends PureComponent<
     };
   } = {};
   store: Store = new Store();
-  gridNode = React.createRef<HTMLDivElement>();
-  footNode = React.createRef<Footer>();
+  gridNode = createRef<HTMLDivElement>();
+  footNode = createRef<Footer>();
   footEl: Element;
   headerEl: Element;
-  headerNode = React.createRef<Header<Data>>();
-  bodyTable = React.createRef<HTMLDivElement>();
-  leftBody = React.createRef<HTMLDivElement>();
-  rightBody = React.createRef<HTMLDivElement>();
-  scrollBody = React.createRef<HTMLDivElement>();
-  scrollHeader = React.createRef<HTMLDivElement>();
+  headerNode = createRef<Header<Data>>();
+  bodyTable = createRef<HTMLDivElement>();
+  leftBody = createRef<HTMLDivElement>();
+  rightBody = createRef<HTMLDivElement>();
+  scrollBody = createRef<HTMLDivElement>();
+  scrollHeader = createRef<HTMLDivElement>();
   scrollPosition!: GridScrollPosition;
   lastScrollLeft!: number;
   lastScrollTop!: number;
-  stickyHead = React.createRef<HTMLDivElement>();
+  stickyHead = createRef<HTMLDivElement>();
 
-  constructor(props: IGridProps<Data>) {
+  constructor(props: IGridProps<Data, RowProps>) {
     super(props);
 
     const expandRowKeys = this.getExpandRowKeys(props);
@@ -174,7 +177,7 @@ export class Grid<Data = any> extends PureComponent<
     };
   }
 
-  getExpandRowKeys(props: IGridProps<Data>) {
+  getExpandRowKeys(props: IGridProps<Data, RowProps>) {
     const { expandation, datasets } = props;
     if (expandation) {
       const { isExpanded } = expandation;
@@ -211,7 +214,7 @@ export class Grid<Data = any> extends PureComponent<
     const expandRows = this.bodyTable?.current?.querySelectorAll(
       `tbody .${prefix}-grid-tr__expanded`
     );
-    const headRows = this.scrollHeader
+    const headRows = this.scrollHeader?.current
       ? this.scrollHeader?.current?.querySelectorAll('thead')
       : this.bodyTable?.current?.querySelectorAll('thead');
 
@@ -347,7 +350,7 @@ export class Grid<Data = any> extends PureComponent<
   };
 
   getColumns = (
-    props: IGridProps<Data>,
+    props: IGridProps<Data, RowProps>,
     columnsArg?: Array<IGridInnerColumn<Data>>,
     expandRowKeysArg?: boolean[]
   ) => {
@@ -997,7 +1000,7 @@ export class Grid<Data = any> extends PureComponent<
 
   // 等重构再删了吧，改不动
   // eslint-disable-next-line react/no-deprecated
-  componentWillReceiveProps(nextProps: IGridProps<Data>) {
+  componentWillReceiveProps(nextProps: IGridProps<Data, RowProps>) {
     if (nextProps.selection?.hasOwnProperty('selectedRowKeys')) {
       this.store.setState({
         selectedRowKeys: nextProps.selection.selectedRowKeys || [],
@@ -1051,6 +1054,7 @@ export class Grid<Data = any> extends PureComponent<
       bordered,
       autoStick,
       autoStickOffsetTop,
+      loadingProps = {},
     } = this.props;
     const { marginLeft, tableWidth, showStickHead } = this.state;
 
@@ -1109,7 +1113,7 @@ export class Grid<Data = any> extends PureComponent<
           return (
             <div className={className} ref={this.gridNode}>
               {this.getBatchComponents('header')}
-              <BlockLoading loading={loading}>
+              <BlockLoading {...loadingProps} loading={loading}>
                 {autoStick && (
                   <div
                     style={stickHeadWarpStyle}

@@ -21,7 +21,7 @@ $inner-circle-offset: ($outer-circle-size - $inner-circle-size - 2px) / 2;
   font-size: 0;
   margin: 0;
   padding: 0;
-  margin-right: 15px;
+  margin-right: 24px;
   vertical-align: middle;
 
   &:last-child {
@@ -149,6 +149,7 @@ $inner-circle-offset: ($outer-circle-size - $inner-circle-size - 2px) / 2;
   box-sizing: border-box;
   display: inline-block;
   padding: 5px 10px;
+  text-align: center;
   transition: all 100ms $timing-fn-ease-in;
 
   > input[type='radio'] {

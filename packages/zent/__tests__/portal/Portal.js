@@ -1,6 +1,5 @@
-import React from 'react';
 import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import Portal from 'portal/Portal';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -93,18 +92,6 @@ describe('Portal', () => {
     unmountPortal(wrapper);
   });
 
-  xit('should support custom prefix', () => {
-    const wrapper = mount(
-      <Portal prefix="custom-prefix">
-        <div className="portal-child" />
-      </Portal>
-    );
-    const container = document.body.querySelector('.custom-prefix-portal');
-    expect(container).toBeTruthy();
-    expect(container.querySelector('.portal-child')).toBeTruthy();
-    unmountPortal(wrapper);
-  });
-
   it('should re-mount when `selector` changes', () => {
     const { wrapper, container } = mountPortal();
 
@@ -137,18 +124,6 @@ describe('Portal', () => {
     removeContainer(container);
   });
 
-  it('should only update container attributes when `prefix` changes', () => {
-    const { wrapper, container } = mountPortal();
-    wrapper.setProps({
-      prefix: 'new-prefix',
-    });
-
-    jest.runOnlyPendingTimers();
-    expect(container.querySelector('.new-prefix-portal')).toBeTruthy();
-    unmountPortal(wrapper);
-    removeContainer(container);
-  });
-
   it('should support render', () => {
     const container = createContainer();
     const wrapper = mount(
@@ -173,12 +148,9 @@ describe('Portal', () => {
         <div className="portal-child">child</div>
       </Portal>
     );
-    expect(
-      wrapper
-        .find('LayeredPortal')
-        .instance()
-        .getLayer()
-    ).toBe(document.querySelector('.layer'));
+    expect(wrapper.find('LayeredPortal').instance().getLayer()).toBe(
+      document.querySelector('.layer')
+    );
     unmountPortal(wrapper);
     removeContainer(container);
   });

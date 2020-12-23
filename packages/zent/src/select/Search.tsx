@@ -1,5 +1,10 @@
-import * as React from 'react';
-import { forwardRef } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 import cx from 'classnames';
 
 export interface ISelectSearchProps {
@@ -24,29 +29,29 @@ function SelectSearch(
     autoWidth,
     value,
   }: ISelectSearchProps,
-  cmdRef: React.RefObject<ISelectImperativeHandlers>
+  cmdRef: React.ForwardedRef<ISelectImperativeHandlers>
 ) {
-  const ref = React.useRef<HTMLInputElement>(null);
-  const focusSearchInput = React.useCallback(() => {
+  const ref = useRef<HTMLInputElement>(null);
+  const focusSearchInput = useCallback(() => {
     ref.current!.focus({
       preventScroll: true,
     });
   }, [ref]);
 
-  React.useImperativeHandle(cmdRef, () => ({
+  useImperativeHandle(cmdRef, () => ({
     focus: () => {
       focusSearchInput();
     },
   }));
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     focusSearchInput();
   }, [focusSearchInput]);
 
   // We measure width and set to the input immediately
   const mirrorValue = value || placeholder;
-  const searchClass = cx('zent-select-search-wrap', {
-    'zent-select-search-wrap-auto-width': autoWidth,
+  const searchClass = cx('zent-select-v2-search-wrap', {
+    'zent-select-v2-search-wrap-auto-width': autoWidth,
   });
 
   return (
@@ -54,7 +59,7 @@ function SelectSearch(
       <input
         ref={ref}
         placeholder={placeholder}
-        className="zent-select-search"
+        className="zent-select-v2-search"
         value={value}
         onChange={onChange}
         onKeyDown={e => {
@@ -75,7 +80,7 @@ function SelectSearch(
       />
       {/* Measure Node */}
       {autoWidth && (
-        <p className="zent-select-search-mirror" aria-hidden>
+        <p className="zent-select-v2-search-mirror" aria-hidden>
           {mirrorValue}
         </p>
       )}

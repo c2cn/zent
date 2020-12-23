@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 import { Omit } from 'utility-types';
 import cx from 'classnames';
 
@@ -22,7 +22,7 @@ function RadioGroupField<T>({
   props: IFormRadioGroupFieldProps<T>;
 }) {
   const onChangeRef = useEventCallbackRef(childProps.onChange);
-  const onChange = React.useCallback(
+  const onChange = useCallback(
     (e: IRadioEvent<T>) => {
       onChangeRef.current?.(e.target.value);
     },
@@ -43,7 +43,7 @@ export function FormRadioGroupField<T>(
     <FormField
       {...rest}
       className={cx(className, 'zent-form-radio-group-field')}
-      defaultValue={'defaultValue' in props ? props.defaultValue : null}
+      defaultValue={props.defaultValue ?? null}
     >
       {childProps => <RadioGroupField childProps={childProps} props={props} />}
     </FormField>

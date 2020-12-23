@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useContext, useCallback } from 'react';
 import { I18nReceiver as Receiver, II18nLocaleTimePicker } from '../i18n';
 import SinglePicker from './components/SinglePickerBase';
 import QuarterPanel from './panels/quarter-panel';
@@ -8,20 +8,29 @@ import { DisabledContext } from '../disabled';
 import { getCallbackValueRangeWithDate } from './utils/getValueInSinglePicker';
 import { dateConfig } from './utils/dateUtils';
 import { quarterFormatText } from './utils/formatInputText';
-import { ISingleSepcialProps, IGenerateDateConfig } from './types';
+import {
+  ISingleSpecialProps,
+  IGenerateDateConfig,
+  IValueType,
+  ISingleSpecialRelatedType,
+} from './types';
 import { MONTH_FORMAT, defaultDatePickerCommonProps } from './constants';
 
 const generateDate: IGenerateDateConfig = dateConfig.quarter;
 const PickerContextProvider = PickerContext.Provider;
 
-export interface IQuarterPickerProps extends ISingleSepcialProps {}
+export interface IQuarterPickerProps<T extends IValueType = 'string'>
+  extends Omit<ISingleSpecialProps, 'valueType' | 'onChange'>,
+    ISingleSpecialRelatedType<T> {}
 
 const DefaultQuarterPickerProps = {
   format: MONTH_FORMAT,
 };
 
-export const QuarterPicker: React.FC<IQuarterPickerProps> = props => {
-  const disabledContext = React.useContext(DisabledContext);
+export const QuarterPicker = <T extends IValueType = 'string'>(
+  props: IQuarterPickerProps<T>
+) => {
+  const disabledContext = useContext(DisabledContext);
   const propsRequired = {
     ...defaultDatePickerCommonProps,
     ...DefaultQuarterPickerProps,
@@ -37,14 +46,14 @@ export const QuarterPicker: React.FC<IQuarterPickerProps> = props => {
   } = propsRequired;
   const { format, valueType } = restProps;
 
-  const getInputText = React.useCallback(
+  const getInputText = useCallback(
     i18n => (val: Date | null) => quarterFormatText(val, i18n),
     []
   );
 
-  const getSelectedValue = React.useCallback(val => val, []);
+  const getSelectedValue = useCallback(val => val, []);
 
-  const getCallbackValue = React.useCallback(
+  const getCallbackValue = useCallback(
     (val: Date) =>
       getCallbackValueRangeWithDate(val, valueType, format, generateDate),
     [valueType, format]

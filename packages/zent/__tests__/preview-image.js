@@ -1,7 +1,6 @@
-import React from 'react';
 import Enzyme, { mount } from 'enzyme';
 import { Simulate } from 'react-dom/test-utils';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import previewImage from 'preview-image';
 import Image from 'preview-image/Image';
 import previewImageFunc from 'preview-image/previewImage';
@@ -22,7 +21,9 @@ describe('previewImage render', () => {
       index: 0,
     });
     expect(document.querySelectorAll('.zent-image-p-anchor').length).toBe(1);
-    expect(document.querySelectorAll('.zent-show-image').length).toBe(1);
+    expect(document.querySelectorAll('.zent-image-p-show-image').length).toBe(
+      1
+    );
 
     Simulate.click(document.querySelector('.zent-image-p-close'));
 

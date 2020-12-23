@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Component } from 'react';
+import { Children, cloneElement, Component } from 'react';
 import cx from 'classnames';
 import kindOf from '../utils/kindOf';
 import Panel from './Panel';
@@ -12,7 +11,6 @@ interface ICollapseProps {
   bordered?: boolean;
   panelTitleBackground?: string;
   className?: string;
-  prefix?: string;
 }
 
 export class Collapse extends Component<ICollapseProps> {
@@ -20,7 +18,6 @@ export class Collapse extends Component<ICollapseProps> {
     bordered: true,
     panelTitleBackground: 'default',
     accordion: false,
-    prefix: 'zent',
   };
 
   static Panel = Panel;
@@ -28,7 +25,6 @@ export class Collapse extends Component<ICollapseProps> {
   render() {
     const {
       className,
-      prefix,
       bordered,
       panelTitleBackground,
       children,
@@ -37,24 +33,24 @@ export class Collapse extends Component<ICollapseProps> {
 
     return (
       <div
-        className={cx(`${prefix}-collapse`, className, {
-          [`${prefix}-collapse--has-border`]: bordered,
-          [`${prefix}-collpase--no-border`]: !bordered,
+        className={cx('zent-collapse', className, {
+          'zent-collapse--has-border': bordered,
+          'zent-collpase--no-border': !bordered,
         })}
       >
-        {React.Children.map(children, (c, idx) => {
+        {Children.map(children, (c, idx) => {
           if (!isElement(c) || !kindOf(c.type, Panel)) {
             throw new Error(
               `Invalid children supplied to Collapse. Each child should be a Panel.`
             );
           }
 
-          return React.cloneElement(c, {
+          return cloneElement(c, {
             onChange: this.onChange,
             active: isPanelActive(activeKey, c.key),
             panelKey: c.key,
             panelTitleBackground,
-            isLast: idx === React.Children.count(children) - 1,
+            isLast: idx === Children.count(children) - 1,
             bordered,
           });
         })}

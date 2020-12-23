@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { FieldSetModel, BasicModel, ModelRef } from './models';
+import { BasicBuilder } from './builders';
+import _warning from '../../utils/warning';
 
 export function noop() {
   // noop
@@ -26,10 +28,26 @@ export function useDestroyOnUnmount<Model extends BasicModel<any>>(
   );
 }
 
-export type $MergeProps<T> = (T extends any
-? (t: T) => void
-: never) extends (r: infer R) => void
+export type $MergeProps<T> = (T extends any ? (t: T) => void : never) extends (
+  r: infer R
+) => void
   ? R
   : never;
 
 export const { isArray } = Array;
+
+export type UnknownObject = Record<string, unknown>;
+export type UnknownFieldSetModelChildren = Record<string, BasicModel<any>>;
+export type UnknownFieldSetBuilderChildren = Record<
+  string,
+  BasicBuilder<any, BasicModel<any>>
+>;
+
+const warnings: Record<string, boolean> = {};
+
+export function warning(id: string, message: string) {
+  if (!warnings[id]) {
+    warnings[id] = true;
+    _warning(false, message);
+  }
+}

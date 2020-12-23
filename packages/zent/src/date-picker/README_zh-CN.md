@@ -50,7 +50,7 @@ interface IDisableDateMap {
 | 参数         | 说明                 | 类型                                     | 默认值         | 是否必须 |
 | ------------ | -------------------- | ---------------------------------------- | -------------- | -------- |
 | value        | 选择的日期           | `string` \| `Date` \| `number`           | -              | 是       |
-| onChange     | 选择日期回调函数     | `(date: string \| Date \| number) => {}` | -              | 是       |
+| onChange     | 选择日期回调函数     | `(date: string | Date | number) => {}` | -              | 是       |
 | placeholder  | 输入框提示文字       | `string`                                 | `'请选择日期'` | 否       |
 | format       | 设置字符串日期的格式 | `string`                                 | `'YYYY-MM-DD'` | 否       |
 | hideFooter   | 隐藏面板底部         | `boolean`                                | `false`        | 否       |
@@ -59,7 +59,7 @@ interface IDisableDateMap {
 
 **注意：**
 
-- `showTime` 为对象时，表示支持时间选择，具体属性可参考 `TimePicker`，包括 `format`、`defaultTime`、`hourStep`、`minuteStep`、`secondStep`
+- `showTime` 为对象时，表示支持时间选择，具体属性可参考 `TimePicker`，包括 `format`、`hourStep`、`minuteStep`、`secondStep`，其中 `defaultTime` 类型定义为 `string | (date: Date) => string`
 - `disabledTime` 在 `showTime` 开启时生效，可参考 `TimePicker` 的 `IDisabledTimeOption`
 - `showTime` 时 `format` 值应为`'YYYY-MM-DD HH:mm:ss'`，使用时注意 `format` 参数
 
@@ -67,8 +67,8 @@ interface IDisableDateMap {
 
 | 参数         | 说明                 | 类型                                            | 默认值                   | 是否必须 |
 | ------------ | -------------------- | ----------------------------------------------- | ------------------------ | -------- |
-| value        | 选择的日期           | `Array<string \| Date \| number>`               | -                        | 是       |
-| onChange     | 选择日期回调函数     | `(date: Array<string \| Date \| number>) => {}` | -                        | 是       |
+| value        | 选择的日期           | `Array<string | Date | number>`               | -                        | 是       |
+| onChange     | 选择日期回调函数     | `(date: Array<string | Date | number>) => {}` | -                        | 是       |
 | placeholder  | 输入框提示文字       | `string`                                        | `'请选择自然周'`         | 否       |
 | weekStartsOn | 一周的开始           | `WeekStartsOnMap`                               | `WeekStartsOnMap.Monday` | 否       |
 | format       | 设置字符串日期的格式 | `string`                                        | `'YYYY-MM-DD'`           | 否       |
@@ -84,7 +84,7 @@ interface IDisableDateMap {
 | 参数        | 说明                 | 类型                                     | 默认值                           | 是否必须 |
 | ----------- | -------------------- | ---------------------------------------- | -------------------------------- | -------- |
 | value       | 选择的日期           | `string` \| `Date` \| `number`           | -                                | 是       |
-| onChange    | 选择日期回调函数     | `(date: string \| Date \| number) => {}` | -                                | 是       |
+| onChange    | 选择日期回调函数     | `(date: string | Date | number) => {}` | -                                | 是       |
 | placeholder | 输入框提示文字       | `string`                                 | `'请选择年份'` \| `'请选择月份'` | 否       |
 | format      | 设置字符串日期的格式 | `string`                                 | `'YYYY'` \| `'YYYY-MM'`          | 否       |
 
@@ -96,8 +96,8 @@ interface IDisableDateMap {
 
 | 参数        | 说明                 | 类型                                            | 默认值         | 是否必须 |
 | ----------- | -------------------- | ----------------------------------------------- | -------------- | -------- |
-| value       | 选择的日期           | `Array<string \| Date \| number>`               | -              | 是       |
-| onChange    | 选择日期回调函数     | `(date: Array<string \| Date \| number>) => {}` | -              | 是       |
+| value       | 选择的日期           | `Array<string | Date | number>`               | -              | 是       |
+| onChange    | 选择日期回调函数     | `(date: Array<string | Date | number>) => {}` | -              | 是       |
 | placeholder | 输入框提示文字       | `string`                                        | `'请选择季度'` | 否       |
 | format      | 设置字符串日期的格式 | `string`                                        | `'YYYY-MM'`    | 否       |
 
@@ -131,15 +131,17 @@ interface IDisabledTimeOption {
 
 | 参数        | 说明             | 类型                                            | 默认值                    | 是否必须 |
 | ----------- | ---------------- | ----------------------------------------------- | ------------------------- | -------- |
-| value       | 选择的日期       | `Array<string \| Date \| number>`               | -                         | 是       |
-| onChange    | 选择日期回调函数 | `(date: Array<string \| Date \| number>) => {}` | -                         | 是       |
+| value       | 选择的日期       | `Array<string | Date | number>`               | -                         | 是       |
+| onChange    | 选择日期回调函数 | `(date: Array<string | Date | number>) => {}` | -                         | 是       |
 | placeholder | 输入框提示文字   | `[string, string]`                              | `['开始日期','结束日期']` | 否       |
 | defaultDate | 默认面板日期     | `[string, string]`                              | -                         | 否       |
+| dateSpan    | 日期跨度         | `number`                                      | -                         | 否       |
 
 **注意：**
 
-- `showTime` 为对象时，`defaultTime` 为数组，表示默认开始时间和默认结束时间（不填为['00:00:00','23:59:59']）
+- `showTime` 为对象时，`defaultTime` 类型为 `[string | (date: Date) => string, string | (date: Date) => string]`，表示默认开始时间和默认结束时间（不填为['00:00:00','23:59:59']）
 - `disabledDate`、`disabledTime` 回调方法的第二个参数均为`type?: 'start' | 'end'`
+- `dateSpan` 仅 `DateRangePicker` 和 `CombinedDateRangePicker` 组件可用
 
 ### TimeRangePicker / CombinedTimeRangePicker API （基于 TimePicker）
 
@@ -153,6 +155,9 @@ interface IDisabledTimeOption {
 **注意：**
 
 - `disabledTime` 回调方法的第二个参数均为`type?: 'start' | 'end'`
+
+### 工具函数
+- 提供时间禁用的处理方法：`disabledTimeWithRange`、`getDisabledDateAndTimeWithRangeProps` 等，需要从 `zent/es/date-picker/disabledHelpers` 引入。
 
 #### 格式化字符表
 

@@ -1,6 +1,6 @@
-import * as React from 'react';
 import { isElement } from 'react-is';
 import cn from 'classnames';
+import { Children } from 'react';
 
 import isNil from '../utils/isNil';
 import noop from '../utils/noop';
@@ -71,7 +71,7 @@ export class Tabs<Id extends string | number = string> extends BaseTabs<
   ): Array<IInnerTab<Id>> {
     const { activeId } = this.props;
 
-    return React.Children.map(
+    return Children.map(
       children,
       (
         child: React.ReactElement<React.PropsWithChildren<ITabPanelProps<Id>>>
@@ -85,8 +85,15 @@ export class Tabs<Id extends string | number = string> extends BaseTabs<
   }
 
   renderNav(tabDataList: Array<IInnerTab<Id>>) {
-    const { type, candel, stretch, navExtraContent, onChange, onDelete } = this
-      .props as ITabsInnerProps<Id>;
+    const {
+      type,
+      candel,
+      stretch,
+      navExtraContent,
+      onChange,
+      onDelete,
+      overflowMode,
+    } = this.props as ITabsInnerProps<Id>;
 
     const TabsNavComp = (TabsNavComponents[type] ||
       TabsNavComponents['normal']) as React.ComponentClass<ITabsNavProps<Id>>;
@@ -98,15 +105,17 @@ export class Tabs<Id extends string | number = string> extends BaseTabs<
         onDelete={onDelete}
         candel={candel}
         stretch={stretch}
+        overflowMode={overflowMode}
         navExtraContent={navExtraContent}
+        type={type}
       />
     );
   }
 
   renderTabPanel(tabItem: IInnerTab<Id>) {
-    const { unmountPanelOnHide } = this.props;
+    const { unmountPanelOnHide, disableLazyMount } = this.props;
     return (
-      <LazyMount mount={tabItem.actived} key={tabItem.key}>
+      <LazyMount mount={disableLazyMount || tabItem.actived} key={tabItem.key}>
         <TabPanel
           tab={tabItem.title}
           actived={tabItem.actived}

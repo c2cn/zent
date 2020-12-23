@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Component } from 'react';
 import { CSSTransition } from 'react-transition-group';
 
@@ -13,12 +12,17 @@ const TIMEOUT = 300; // ms
 let mousePosition: IMousePosition | null = null;
 
 if (isBrowser) {
-  addEventListener(document.documentElement, 'click', (e: MouseEvent) => {
-    mousePosition = {
-      x: e.clientX,
-      y: e.clientY,
-    };
-  });
+  addEventListener(
+    document.documentElement,
+    'click',
+    (e: MouseEvent) => {
+      mousePosition = {
+        x: e.clientX,
+        y: e.clientY,
+      };
+    },
+    { capture: true }
+  );
 }
 
 export interface IDialogProps {
@@ -31,7 +35,6 @@ export interface IDialogProps {
   mask?: boolean;
   maskClosable?: boolean;
   className?: string;
-  prefix?: string;
   style?: React.CSSProperties;
   onOpened?: () => void;
   onClosed?: () => void;
@@ -44,7 +47,6 @@ export interface IDialogState {
 
 export class Dialog extends Component<IDialogProps, IDialogState> {
   static defaultProps = {
-    prefix: 'zent',
     onClose() {},
     visible: false,
     className: '',
@@ -104,7 +106,6 @@ export class Dialog extends Component<IDialogProps, IDialogState> {
   render() {
     const {
       visible,
-      prefix,
       closeBtn,
       style,
       onOpened,
@@ -116,12 +117,6 @@ export class Dialog extends Component<IDialogProps, IDialogState> {
     } = this.props;
     const { exiting } = this.state;
 
-    // load default max/min-width value when width is not specified in style prop
-    const elStyle = {
-      ...(style.width ? {} : { minWidth: '560px', maxWidth: '75%' }),
-      ...style,
-    };
-
     if (visible) {
       this.lastMousePosition = this.lastMousePosition || mousePosition;
     } else {
@@ -132,12 +127,11 @@ export class Dialog extends Component<IDialogProps, IDialogState> {
       <Portal
         visible={visible || exiting}
         onClose={this.onClose}
-        className={`${prefix}-dialog-r-anchor`}
+        className="zent-dialog-r-anchor"
         closeOnESC={closeBtn}
         blockPageScroll
       >
         <DialogElWrapper
-          prefix={prefix}
           mask={mask}
           maskClosable={maskClosable}
           visible={visible}
@@ -149,14 +143,13 @@ export class Dialog extends Component<IDialogProps, IDialogState> {
             unmountOnExit
             in={visible}
             timeout={TIMEOUT}
-            classNames={`${prefix}-zoom`}
+            classNames="zent-zoom"
             onEntered={onOpened}
             onExited={this.onExited}
           >
             <DialogInnerEl
               {...props}
-              prefix={prefix}
-              style={elStyle}
+              style={style}
               closeBtn={closeBtn}
               mousePosition={this.lastMousePosition}
             >

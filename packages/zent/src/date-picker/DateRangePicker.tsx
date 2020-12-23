@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useContext, useCallback } from 'react';
 import { I18nReceiver as Receiver, II18nLocaleTimePicker } from '../i18n';
 import DatePicker from './DatePicker';
 import RangePicker from './components/RangePickerBase';
@@ -9,10 +9,11 @@ import { dateConfig } from './utils/dateUtils';
 import {
   IGenerateDateConfig,
   IRangeProps,
-  IShowTime,
+  IShowTimeRange,
   IDisabledTime,
-  StringTuple,
   DateNullTuple,
+  IValueType,
+  IRangeRelatedType,
 } from './types';
 import { getRangeValuesWithValueType } from './utils/getValueInRangePicker';
 import {
@@ -24,16 +25,21 @@ import {
 
 const generateDate: IGenerateDateConfig = dateConfig.date;
 const PickerContextProvider = PickerContext.Provider;
-export interface IDateRangePickerProps extends IRangeProps {
-  showTime?: IShowTime<StringTuple>;
+export interface IDateRangePickerProps<T extends IValueType = 'string'>
+  extends Omit<IRangeProps, 'valueType' | 'onChange'>,
+    IRangeRelatedType<T> {
+  showTime?: IShowTimeRange<string>;
   disabledTime?: IDisabledTime;
+  hideFooter?: boolean;
 }
 const DefaultDateRangeProps = {
   format: DATE_FORMAT,
 };
 
-export const DateRangePicker: React.FC<IDateRangePickerProps> = props => {
-  const disabledContext = React.useContext(DisabledContext);
+export const DateRangePicker = <T extends IValueType = 'string'>(
+  props: IDateRangePickerProps<T>
+) => {
+  const disabledContext = useContext(DisabledContext);
   const propsRequired = {
     ...defaultDatePickerCommonProps,
     ...DefaultDateRangeProps,
@@ -49,7 +55,7 @@ export const DateRangePicker: React.FC<IDateRangePickerProps> = props => {
     disabled = disabledContext.value,
   } = propsRequired;
 
-  const getCallbackRangeValue = React.useCallback(
+  const getCallbackRangeValue = useCallback(
     (val: DateNullTuple) => getRangeValuesWithValueType(valueType, format, val),
     [valueType, format]
   );
@@ -60,6 +66,7 @@ export const DateRangePicker: React.FC<IDateRangePickerProps> = props => {
         <PickerContextProvider
           value={{
             i18n,
+            autoComplete: !!showTime,
             getCallbackRangeValue,
           }}
         >

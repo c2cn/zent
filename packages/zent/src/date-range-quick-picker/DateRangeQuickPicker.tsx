@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Component } from 'react';
 import cx from 'classnames';
 
@@ -42,11 +41,8 @@ export interface IDateRangeQuickPickerProps {
   className?: string;
 }
 
-export class DateRangeQuickPicker extends Component<
-  IDateRangeQuickPickerProps
-> {
+export class DateRangeQuickPicker extends Component<IDateRangeQuickPickerProps> {
   static defaultProps = {
-    prefix: 'zent',
     className: '',
     value: [],
     valueType: 'string',
@@ -105,7 +101,7 @@ export class DateRangeQuickPicker extends Component<
     const selectedDays = chosenDays ?? chooseDays;
 
     return (
-      <div className={cx('zent-date-range-picker', className)}>
+      <div className={cx('zent-date-range-quick-picker', className)}>
         <DateRangePicker
           value={value}
           onChange={this.handleTimeChange}
@@ -113,13 +109,13 @@ export class DateRangeQuickPicker extends Component<
           showTime={!showTime}
           {...pickerProps}
         />
-        <div className={'zent-date-range-picker__filter'}>
+        <div className={'zent-date-range-quick-picker__filter'}>
           {preset.map((item, index) => (
             <Receiver key={index} componentName="RangePicker">
               {i18n => (
                 <span
                   key={index}
-                  className={cx('zent-date-range-picker__btn', {
+                  className={cx('zent-date-range-quick-picker__btn', {
                     active: isEqual(selectedDays, item.value),
                   })}
                   onClick={this.handleChosenDays.bind(this, item.value)}
@@ -145,7 +141,6 @@ function calculateTime(
   let endTime: SingleDate;
 
   const today = getToday();
-  const tomorrow = today + ONE_DAY;
 
   if (Array.isArray(chosenItem)) {
     [startTime, endTime] = chosenItem;
@@ -156,9 +151,7 @@ function calculateTime(
       startTime = today - chosenItem * ONE_DAY;
     }
 
-    if (chosenItem === 0) {
-      endTime = tomorrow - 1000;
-    } else if (chosenItem === 1) {
+    if (chosenItem === 1) {
       endTime = today - 1000;
     } else {
       endTime = Date.now();

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 import Button from '../button';
 import { I18nReceiver as Receiver } from '../i18n';
 import isPromise from '../utils/isPromise';
@@ -6,10 +6,9 @@ import Popover from '../popover';
 import { usePopover } from '../popover/withPopover';
 import { IPopState } from './Pop';
 
-export interface IPopActionCallback {
-  (close: () => void): void;
-  (): Promise<void>;
-}
+export type IPopActionCallback =
+  | (() => Promise<void>)
+  | ((close: () => void) => void);
 
 export interface IChangePending {
   (key: keyof IPopState, state: boolean, callback?: () => void): void;
@@ -47,7 +46,7 @@ function handleClick(
     return callback(finishClose);
   }
 
-  const maybePromise = callback();
+  const maybePromise = (callback as () => Promise<void>)();
   if (isPromise(maybePromise)) {
     startClose();
     maybePromise.then(finishClose).catch(() => changePending(stateKey, false));
@@ -67,14 +66,14 @@ function PopAction({
   changePending,
 }: IPopActionProps) {
   const popover = usePopover();
-  const onConfirmClick = React.useCallback(() => {
+  const onConfirmClick = useCallback(() => {
     handleClick('confirmPending', changePending, popover, onConfirm);
   }, [onConfirm, popover, changePending]);
-  const onCancelClick = React.useCallback(() => {
+  const onCancelClick = useCallback(() => {
     handleClick('cancelPending', changePending, popover, onCancel);
   }, [onCancel, popover, changePending]);
   return (
-    <div className="zent-pop-buttons">
+    <div className="zent-pop-v2-buttons">
       <Receiver componentName="Pop">
         {i18n => (
           <Button

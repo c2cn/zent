@@ -1,7 +1,7 @@
-import * as React from 'react';
+import { useMemo } from 'react';
+
 import cx from 'classnames';
 import Icon from '../../icon';
-
 import { formatDate, formatDateRange } from '../utils';
 import {
   ISingleTriggerProps,
@@ -49,14 +49,14 @@ export const SingleInputTrigger: React.FC<ISingleTriggerProps> = ({
   canClear,
   icon,
   hiddenIcon,
+  disabled,
   ...restProps
 }) => {
   const [startText, endText] = Array.isArray(text) ? text : [text];
-  const { disabled } = restProps;
   const canClearMerge = canClear && !!value;
 
   return (
-    <TriggerDiv {...restProps} canClear={canClearMerge}>
+    <TriggerDiv {...restProps} disabled={disabled} canClear={canClearMerge}>
       {name && (
         <input
           type="hidden"
@@ -107,9 +107,10 @@ export const CombinedInputTrigger: React.FC<ICombinedInputTriggerProps> = ({
   canClear,
   icon,
   onClearInput,
+  disabled,
   ...restProps
 }) => {
-  const [leftText, rightText] = React.useMemo(() => {
+  const [leftText, rightText] = useMemo(() => {
     if (!selected) return [null, null];
     return formatDateRange(selected, format);
   }, [selected, format]);
@@ -117,6 +118,7 @@ export const CombinedInputTrigger: React.FC<ICombinedInputTriggerProps> = ({
   return (
     <TriggerDiv
       {...restProps}
+      disabled={disabled}
       canClear={canClear && (!!leftText || !!rightText)}
     >
       {name && (

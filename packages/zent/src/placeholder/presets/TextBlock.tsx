@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { PureComponent } from 'react';
 import cx from 'classnames';
 
@@ -17,19 +16,15 @@ export interface IPlaceholderTextBlockProps {
   dashed?: boolean;
   style?: React.CSSProperties;
   className?: string;
-  prefix?: string;
 }
 
-export default class TextBlock extends PureComponent<
-  IPlaceholderTextBlockProps
-> {
+export default class TextBlock extends PureComponent<IPlaceholderTextBlockProps> {
   static defaultProps = {
     widths: [97, 99, 94, 92, 96, 95, 98, 60],
     dashSegments: DEFAULT_SEGMENTS,
     animate: true,
     dashed: true,
     lineSpacing: '0.7em',
-    prefix: 'zent',
   };
 
   getRowStyle = i => {
@@ -41,14 +36,7 @@ export default class TextBlock extends PureComponent<
   };
 
   getRows = () => {
-    const {
-      rows,
-      lineSpacing,
-      prefix,
-      animate,
-      dashed,
-      dashSegments,
-    } = this.props;
+    const { rows, lineSpacing, animate, dashed, dashSegments } = this.props;
     const textRows = [];
 
     for (let i = 0; i < rows; i++) {
@@ -56,7 +44,6 @@ export default class TextBlock extends PureComponent<
       const props: IPlaceholderTextRowDashedProps & IPlaceholderTextRowProps = {
         style: this.getRowStyle(i),
         lineSpacing: i ? lineSpacing : 0,
-        prefix,
         animate,
       };
       if (dashed) {
@@ -70,8 +57,8 @@ export default class TextBlock extends PureComponent<
   };
 
   render() {
-    const { style, className, prefix } = this.props;
-    const classes = cx(`${prefix}-placeholder-text-block`, className);
+    const { style, className } = this.props;
+    const classes = cx('zent-placeholder-text-block', className);
 
     return (
       <div className={classes} style={{ ...style, width: '100%' }}>

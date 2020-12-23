@@ -1,7 +1,8 @@
-import * as React from 'react';
 import cx from 'classnames';
 import { Omit } from 'utility-types';
 import { Subscription } from 'rxjs';
+import { Component, createRef } from 'react';
+
 import {
   FormProvider,
   useField,
@@ -18,6 +19,8 @@ import {
   createAsyncValidator,
   isAsyncValidator,
   useFieldValue,
+  FieldValid,
+  useFieldValid,
 } from './formulr';
 import memorize from '../utils/memorize-one';
 import {
@@ -25,12 +28,13 @@ import {
   IFormChild,
   IZentFormChildrenContext,
 } from './context';
-import { ZentForm, useForm } from './ZentForm';
-import scroll from '../utils/scroll';
+import { ZentForm, useForm, useFormValue, useFormValid } from './ZentForm';
+import { smoothScroll } from '../utils/scroll';
 import { CombineErrors } from './CombineErrors';
 import { ValidateOccasion, TouchWhen } from './shared';
 import { Disabled } from '../disabled';
 import getScrollPosition from '../utils/dom/getScollPosition';
+import isPromise from '../utils/isPromise';
 
 export {
   IRenderError,
@@ -48,6 +52,7 @@ function makeChildrenContext(children: IFormChild[]): IZentFormChildrenContext {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export interface IFormProps<T extends {}>
   extends Omit<
     React.FormHTMLAttributes<HTMLFormElement>,
@@ -58,19 +63,28 @@ export interface IFormProps<T extends {}>
    * @defaultValue `'vertical'`
    */
   layout?: 'horizontal' | 'vertical';
+
   /**
    * `useForm`得到的`model`
    */
   form: ZentForm<T>;
+
   /**
-   * @deprecated
    * 禁用表单输入，开启后表单内所有元素不可编辑。注意：自定义组件需要自己实现禁用逻辑和展示
    */
   disabled?: boolean;
+
   /**
    * 表单校验报错时自动滚动到第一个错误的位置
    */
   scrollToError?: boolean;
+
+  /**
+   * 触发滚动到第一个错误前的回调函数
+   * 如果返回一个 `Promise`，当 `Promise` `resolve` 时才会继续执行滚动，`reject` 将终止滚动操作
+   */
+  willScrollToError?: (form: ZentForm<T>) => void | Promise<void>;
+
   /**
    * 表单提交回调函数，`form.submit` 或者原生的 `DOM` 触发的 `submit` 事件都会触发 `onSubmit`
    */
@@ -78,21 +92,30 @@ export interface IFormProps<T extends {}>
     form: ZentForm<T>,
     e?: React.SyntheticEvent
   ) => void | Promise<unknown>;
+
   /**
    * 表单提交失败时的回调函数
    */
   onSubmitFail?: (e: unknown) => void;
+
   /**
    * 表单提交成功时的回调函数
    */
   onSubmitSuccess?: () => void;
+
+  /**
+   * 表单重置回调函数，`form.reset` 或者原生的 `DOM` 触发的 `reset` 事件都会触发 `onReset`
+   */
+  onReset?: (e?: React.FormEvent<HTMLFormElement>) => void;
+
   /**
    * 禁用表单内 `input` 元素的回车提交功能
    */
   disableEnterSubmit?: boolean;
 }
 
-export class Form<T extends {}> extends React.Component<IFormProps<T>> {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export class Form<T extends {}> extends Component<IFormProps<T>> {
   static displayName = 'ZentForm';
 
   static CombineErrors = CombineErrors;
@@ -106,23 +129,33 @@ export class Form<T extends {}> extends React.Component<IFormProps<T>> {
   static form = form;
   static FieldValue = FieldValue;
   static FieldSetValue = FieldSetValue;
+  static useFormValue = useFormValue;
   static useFieldArrayValue = useFieldArrayValue;
   static useFieldValue = useFieldValue;
+  static FieldValid = FieldValid;
+  static useFormValid = useFormValid;
+  static useFieldValid = useFieldValid;
   static ValidateOption = ValidateOption;
   static createAsyncValidator = createAsyncValidator;
   static isAsyncValidator = isAsyncValidator;
   static ValidateOccasion = ValidateOccasion;
   static TouchWhen = TouchWhen;
 
-  readonly formRef = React.createRef<HTMLFormElement>();
+  readonly formRef = createRef<HTMLFormElement>();
 
   private readonly children: IFormChild[] = [];
   private getChildrenContext = memorize(makeChildrenContext);
-  private subscription: Subscription | null = null;
+  private submitSubscription: Subscription | null = null;
+  private resetSubscription: Subscription | null = null;
 
   private onSubmit: React.FormEventHandler<HTMLFormElement> = e => {
     e.preventDefault();
     this.props.form.submit(e);
+  };
+
+  private onReset: React.FormEventHandler<HTMLFormElement> = e => {
+    e.preventDefault();
+    this.props.form.reset(e);
   };
 
   private onKeyDown: React.KeyboardEventHandler<HTMLFormElement> = e => {
@@ -136,6 +169,12 @@ export class Form<T extends {}> extends React.Component<IFormProps<T>> {
     }
     onKeyDown && onKeyDown(e);
   };
+
+  private reset(e?: React.FormEvent<HTMLFormElement>) {
+    const { form, onReset } = this.props;
+    form.resetValue();
+    onReset?.(e);
+  }
 
   private async submit(e?: React.SyntheticEvent) {
     const {
@@ -178,6 +217,23 @@ export class Form<T extends {}> extends React.Component<IFormProps<T>> {
   }
 
   scrollToFirstError() {
+    const { willScrollToError, form } = this.props;
+    if (typeof willScrollToError !== 'function') {
+      this._scrollToFirstError();
+    } else {
+      const p = willScrollToError(form);
+      if (!isPromise<void>(p)) {
+        this._scrollToFirstError();
+      } else {
+        // Do not scroll if promise rejects
+        p.then(() => {
+          this._scrollToFirstError();
+        }).catch(() => {});
+      }
+    }
+  }
+
+  private _scrollToFirstError() {
     let scrollX = Infinity;
     let scrollY = Infinity;
     for (let i = 0; i < this.children.length; i += 1) {
@@ -205,7 +261,7 @@ export class Form<T extends {}> extends React.Component<IFormProps<T>> {
 
     if (scrollX !== Infinity) {
       const { x, y } = getScrollPosition();
-      scroll(document.body, scrollX + x, scrollY + y);
+      smoothScroll(document.body, scrollX + x, scrollY + y);
     }
   }
 
@@ -213,15 +269,25 @@ export class Form<T extends {}> extends React.Component<IFormProps<T>> {
     this.submit(e);
   };
 
+  private resetListener = (e?: React.FormEvent<HTMLFormElement>) => {
+    this.reset(e);
+  };
+
   private subscribe() {
     const { form } = this.props;
-    this.subscription = form.submit$.subscribe(this.submitListener);
+    this.submitSubscription = form.submit$.subscribe(this.submitListener);
+    this.resetSubscription = form.reset$.subscribe(this.resetListener);
   }
 
   private unsubscribe() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-      this.subscription = null;
+    if (this.submitSubscription) {
+      this.submitSubscription.unsubscribe();
+      this.submitSubscription = null;
+    }
+
+    if (this.resetSubscription) {
+      this.resetSubscription.unsubscribe();
+      this.resetSubscription = null;
     }
   }
 
@@ -270,6 +336,7 @@ export class Form<T extends {}> extends React.Component<IFormProps<T>> {
                 className
               )}
               onSubmit={this.onSubmit}
+              onReset={this.onReset}
               onKeyDown={this.onKeyDown}
             >
               {children}

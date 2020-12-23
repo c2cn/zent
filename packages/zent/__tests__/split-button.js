@@ -1,6 +1,5 @@
-import React from 'react';
 import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import SplitButton from 'split-button';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -9,11 +8,6 @@ describe('SplitButton', () => {
   it('className default to zent-split-button', () => {
     const wrapper = mount(<SplitButton />);
     expect(wrapper.children().hasClass('zent-split-button')).toBe(true);
-  });
-
-  it('can hav custom prefix', () => {
-    const wrapper = mount(<SplitButton prefix="arvin" />);
-    expect(wrapper.children().hasClass('arvin-split-button')).toBe(true);
   });
 
   it('can have custom className', () => {
@@ -48,10 +42,7 @@ describe('SplitButton', () => {
     const wrapper = mount(
       <SplitButton dropdownData={data} onSelect={handleSelect} />
     );
-    wrapper
-      .find('.zent-split-button__dropdown')
-      .at(0)
-      .simulate('click');
+    wrapper.find('.zent-split-button__dropdown').at(0).simulate('click');
     wrapper.instance().handleSelect();
     expect(data.length).toBe(3);
   });

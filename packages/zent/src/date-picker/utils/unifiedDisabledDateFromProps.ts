@@ -1,4 +1,4 @@
-import { isAfter, isBefore } from 'date-fns';
+import { endOfDay, isAfter, isBefore, startOfDay } from 'date-fns';
 import { parseBase } from './index';
 import {
   IDisabledDate,
@@ -15,12 +15,12 @@ export default function unifiedDisabledDateFromProps(
   format: string,
   disabledDateProps: IDisabledDate
 ): IDisabledDateFunc {
-  let disabledDate;
+  let disabledDate: IDisabledDateFunc;
   if (typeof disabledDateProps === 'object') {
     const { min, max } = disabledDateProps as IDisabledDateSimple;
     disabledDate = (date: Date) =>
-      (!!min && isBefore(date, parseBase(min, format))) ||
-      (!!max && isAfter(date, parseBase(max, format)));
+      (!!min && isBefore(endOfDay(date), parseBase(min, format))) ||
+      (!!max && isAfter(startOfDay(date), parseBase(max, format)));
   } else {
     disabledDate = disabledDateProps;
   }

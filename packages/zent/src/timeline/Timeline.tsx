@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { PureComponent } from 'react';
+import { Children, cloneElement, PureComponent } from 'react';
 import cx from 'classnames';
 import { isElement } from 'react-is';
 
@@ -33,13 +32,11 @@ export interface ITimelineProps {
   timeline?: ITimelineArrayItem[];
   type?: 'vertical' | 'horizontal';
   className?: string;
-  prefix?: string;
   style?: React.CSSProperties;
 }
 
 export class Timeline extends PureComponent<ITimelineProps> {
   static defaultProps = {
-    prefix: 'zent',
     type: 'horizontal',
     size: '100%',
     style: {},
@@ -57,19 +54,19 @@ export class Timeline extends PureComponent<ITimelineProps> {
         return ret;
       }, []);
     }
-    return React.Children.map(children, child => {
+    return Children.map(children, child => {
       if (!isElement(child)) {
         return null;
       }
 
-      return React.cloneElement(child, {
+      return cloneElement(child, {
         type,
       });
     });
   }
 
   render() {
-    const { size, prefix, type, className } = this.props;
+    const { size, type, className } = this.props;
     const key = type === 'horizontal' ? 'width' : 'height';
     const style = {
       ...this.props.style,
@@ -79,10 +76,10 @@ export class Timeline extends PureComponent<ITimelineProps> {
     return (
       <ul
         className={cx(
-          `${prefix}-timeline`,
-          `${prefix}-timeline-${type}`,
+          'zent-timeline',
+          `zent-timeline-${type}`,
           {
-            [`${prefix}-timeline-dynamic`]: Boolean(size),
+            'zent-timeline-dynamic': Boolean(size),
           },
           className
         )}

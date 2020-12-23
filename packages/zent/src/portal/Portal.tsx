@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   useRef,
   useImperativeHandle,
@@ -17,6 +16,7 @@ import createElement from '../utils/dom/createElement';
 import { SCROLLBAR_WIDTH } from '../utils/getScrollbarWidth';
 import { setValueForStyles } from '../utils/style/CSSPropertyOperations';
 import { addEventListener } from '../utils/component/event-handler';
+import isBrowser from '../utils/isBrowser';
 
 function diffStyle(prev: React.CSSProperties, next: React.CSSProperties) {
   const result: React.CSSProperties = {};
@@ -111,7 +111,10 @@ export const Portal = forwardRef<IPortalImperativeHandlers, IPortalProps>(
       children,
       append,
     } = props;
-    const node = useMemo(() => createElement(layer), [layer]);
+    // skip render in SSR
+    const node = useMemo(() => (isBrowser ? createElement(layer) : null), [
+      layer,
+    ]);
     const getParent = useMemo(() => memorize(getNodeFromSelector), []);
     const propsRef = useRef<IPortalProps>(props);
     propsRef.current = props;
@@ -252,7 +255,7 @@ export const Portal = forwardRef<IPortalImperativeHandlers, IPortalProps>(
      * 这里利用了React的内部实现，MountElement的componentDidMount(useEffect, useLayoutEffect)
      * 会在children的之前被调用
      */
-    return visible ? (
+    return visible && node ? (
       <PurePortal ref={purePortalRef} append={append} selector={node}>
         <MountElement node={node} getParent={getParent} selector={selector} />
         {children}

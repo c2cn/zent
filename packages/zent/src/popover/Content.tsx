@@ -1,4 +1,3 @@
-import * as React from 'react';
 import cx from 'classnames';
 import { Subject } from 'rxjs';
 import { IPopoverContext, usePopoverContext } from './Context';
@@ -7,15 +6,24 @@ import { useWindowEventHandler } from '../utils/component/WindowEventHandler';
 import findPositionedParent from '../utils/dom/findPositionedParent';
 import { IPopoverPosition } from './position-function';
 import { INVISIBLE_POSITION } from './placement';
-import useLazy from '../utils/useLazy';
-import useAnimationFramed from '../utils/useAnimationFramed';
-import { useContext } from 'react';
+import { useLazy } from '../utils/hooks/useLazy';
+import { useAnimationFramed } from '../utils/hooks/useAnimationFramed';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useMounted } from '../utils/hooks/useMounted';
 
 interface IPopoverContentContext {
   positionChanged$: Subject<void>;
 }
 
-const ContentContext = React.createContext<IPopoverContentContext>({
+const ContentContext = createContext<IPopoverContentContext>({
   positionChanged$: new Subject(),
 });
 
@@ -88,14 +96,14 @@ function PopoverContent({ children }: IPopoverContentProps) {
   const { positionChanged$: parentPositionChanged$ } = useContext(
     ContentContext
   );
-  const contentCtx = React.useMemo<IPopoverContentContext>(
+  const contentCtx = useMemo<IPopoverContentContext>(
     () => ({
       positionChanged$: new Subject(),
     }),
     []
   );
-  const [position, setPosition] = React.useState(INVISIBLE_POSITION);
-  const contextRef = React.useRef(ctx);
+  const [position, setPosition] = useState(INVISIBLE_POSITION);
+  const contextRef = useRef(ctx);
   contextRef.current = ctx;
   const { containerSelector, portalRef } = ctx;
   const getContainer = useLazy(
@@ -106,7 +114,12 @@ function PopoverContent({ children }: IPopoverContentProps) {
     const container = getContainer();
     return container && findPositionedParent(container);
   }, [getContainer]);
+  const mounted = useMounted();
   const adjustPosition = useAnimationFramed(() => {
+    if (!mounted.current) {
+      return;
+    }
+
     const position = getPosition(
       contextRef.current,
       getContainer,
@@ -115,7 +128,7 @@ function PopoverContent({ children }: IPopoverContentProps) {
     );
     setPosition(position);
   });
-  React.useImperativeHandle(
+  useImperativeHandle(
     ctx.contentRef,
     () => ({
       adjustPosition,
@@ -126,11 +139,11 @@ function PopoverContent({ children }: IPopoverContentProps) {
   useWindowEventHandler('scroll', adjustPosition, {
     capture: true,
   });
-  React.useEffect(() => {
+  useEffect(() => {
     ctx.popover.positionUpdated();
     contentCtx.positionChanged$.next();
   }, [ctx.popover, position, contentCtx]);
-  React.useEffect(() => {
+  useEffect(() => {
     const $ = parentPositionChanged$.subscribe(() => {
       adjustPosition();
     });
@@ -142,7 +155,7 @@ function PopoverContent({ children }: IPopoverContentProps) {
       ref={portalRef}
       visible={ctx.visible}
       selector={containerSelector}
-      className={cx('zent-popover', position.className, ctx.className)}
+      className={cx('zent-popover-v2', position.className, ctx.className)}
       style={{ ...position.style, ...ctx.style }}
     >
       <ContentContext.Provider value={contentCtx}>

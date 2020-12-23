@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import {
   I18nLocaleTimePicker,
   II18nLocaleCascader,
@@ -105,6 +103,9 @@ export const Cascader: II18nLocaleCascader = {
   ...common,
   title: '标题',
   placeholder: '请选择',
+  searchPlaceholder: '请选择或输入搜索',
+  searchEmpty: '无搜索结果',
+  empty: '无数据',
 };
 
 const QUARTER_NAMES = ['第一季度', '第二季度', '第三季度', '第四季度'];
@@ -174,9 +175,8 @@ export const Upload: II18nLocaleUpload = {
   retry: '重新上传',
   failed: '上传失败',
   limit: '文件添加个数已达上限',
-  normal: {
-    add: '添加文件',
-  },
+  add: '添加文件',
+  uploading: '文件上传中',
 };
 
 export const Mention: II18nLocaleMention = {

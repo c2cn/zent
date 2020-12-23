@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import {
   I18nLocaleTimePicker,
   II18nLocaleCascader,
@@ -104,7 +102,10 @@ export const Grid: II18nLocaleGrid = {
 export const Cascader: II18nLocaleCascader = {
   ...common,
   title: 'Title',
-  placeholder: 'Please choose',
+  placeholder: 'Please select',
+  searchPlaceholder: 'Please select or search',
+  searchEmpty: 'No result',
+  empty: 'Empty',
 };
 
 const QUARTER_NAMES = [
@@ -178,9 +179,8 @@ export const Upload: II18nLocaleUpload = {
   retry: 'Retry',
   failed: 'Failed',
   limit: 'Maximum number of files has been reached',
-  normal: {
-    add: 'Add File',
-  },
+  add: 'Add File',
+  uploading: 'File uploading',
 };
 
 export const Mention: II18nLocaleMention = {

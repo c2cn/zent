@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import cx from 'classnames';
 
 import Popover, {
@@ -21,7 +20,8 @@ import noop from '../utils/noop';
 
 const { Trigger } = Popover;
 
-export interface IPopNoneTriggerProps<Props extends object>
+// eslint-disable-next-line @typescript-eslint/ban-types
+export interface IPopNoneTriggerProps<Props = {}>
   extends IPopoverTriggerProps<Props>,
     IPopCommonProps {
   trigger: 'none';
@@ -29,13 +29,15 @@ export interface IPopNoneTriggerProps<Props extends object>
 
 export interface IPopClickTriggerProps<
   Props extends IPopoverClickTriggerChildProps
-> extends IPopoverClickTriggerProps<Props>, IPopCommonProps {
+> extends IPopoverClickTriggerProps<Props>,
+    IPopCommonProps {
   trigger: 'click';
 }
 
 export interface IPopHoverTriggerProps<
   Props extends IPopoverHoverTriggerChildProps
-> extends IPopoverHoverTriggerProps<Props>, IPopCommonProps {
+> extends IPopoverHoverTriggerProps<Props>,
+    IPopCommonProps {
   trigger: 'hover';
   mouseEnterDelay?: number;
   mouseLeaveDelay?: number;
@@ -43,7 +45,8 @@ export interface IPopHoverTriggerProps<
 
 export interface IPopFocusTriggerProps<
   Props extends IPopoverFocusTriggerChildProps
-> extends IPopoverFocusTriggerProps<Props>, IPopCommonProps {
+> extends IPopoverFocusTriggerProps<Props>,
+    IPopCommonProps {
   trigger: 'focus';
 }
 
@@ -69,7 +72,7 @@ export type PopPositions =
 
 export interface IPopCommonProps {
   content: React.ReactNode;
-  position: PopPositions | IPositionFunction;
+  position?: PopPositions | IPositionFunction;
   cushion?: number;
   centerArrow?: boolean;
   header?: React.ReactNode;
@@ -77,7 +80,7 @@ export interface IPopCommonProps {
   onClose?: () => void;
   onBeforeShow?: IPopoverBeforeHook;
   onBeforeClose?: IPopoverBeforeHook;
-  type: 'primary' | 'default' | 'danger' | 'success';
+  type?: 'primary' | 'default' | 'danger' | 'success';
   visible?: boolean;
   onVisibleChange?: (visible: boolean) => void;
   onPositionUpdated?: () => void;
@@ -115,7 +118,7 @@ export class Pop extends Component<IPopProps, IPopState> {
 
   static withPop = exposePopover('pop');
 
-  private popoverRef = React.createRef<Popover>();
+  private popoverRef = createRef<Popover>();
   private isUnmounted = false;
 
   state = {
@@ -223,9 +226,9 @@ export class Pop extends Component<IPopProps, IPopState> {
         ref={this.popoverRef}
         visible={closePending ? true : visible}
         onVisibleChange={closePending ? noop : onVisibleChange}
-        className={cx('zent-pop', className, {
-          'zent-pop--has-header': hasHeader,
-          'zent-pop--no-header': !hasHeader,
+        className={cx('zent-pop-v2', className, {
+          'zent-pop-v2--has-header': hasHeader,
+          'zent-pop-v2--no-header': !hasHeader,
         })}
         style={style}
         cushion={cushion}
@@ -240,8 +243,8 @@ export class Pop extends Component<IPopProps, IPopState> {
       >
         {this.renderTrigger()}
         <Popover.Content>
-          {hasHeader && <div className="zent-pop-header">{header}</div>}
-          <div className="zent-pop-inner">
+          {hasHeader && <div className="zent-pop-v2-header">{header}</div>}
+          <div className="zent-pop-v2-inner">
             {content}
             {(onCancel || onConfirm) && (
               <Action
@@ -256,7 +259,7 @@ export class Pop extends Component<IPopProps, IPopState> {
               />
             )}
           </div>
-          <div className="zent-pop-arrow" />
+          <div className="zent-pop-v2-arrow" />
         </Popover.Content>
       </Popover>
     );

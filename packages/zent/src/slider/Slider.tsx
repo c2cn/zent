@@ -1,5 +1,5 @@
-import * as React from 'react';
 import cx from 'classnames';
+import { Component, createRef } from 'react';
 
 import getWidth from '../utils/getWidth';
 import Point from './Point';
@@ -61,7 +61,7 @@ function checkProps(props: ISliderProps) {
   }
 }
 
-export class Slider extends React.Component<ISliderProps, ISliderState> {
+export class Slider extends Component<ISliderProps, ISliderState> {
   static defaultProps = {
     min: 0,
     max: 100,
@@ -81,7 +81,7 @@ export class Slider extends React.Component<ISliderProps, ISliderState> {
     prevProps: this.props,
   };
 
-  private containerRef = React.createRef<HTMLDivElement>();
+  private containerRef = createRef<HTMLDivElement>();
   private mouseDown = false;
   private limit: readonly [number, number] | null = null;
   private isLeft: boolean | null = null;
@@ -224,16 +224,18 @@ export class Slider extends React.Component<ISliderProps, ISliderState> {
   private getValueFromEvent(e: MouseEvent | React.MouseEvent) {
     const { min, max } = this.props;
     const el = this.containerRef.current!;
-    let nextValue =
+    const ratio =
       (e.clientX - el.getBoundingClientRect().left) / el.clientWidth;
-    nextValue = getValue(nextValue, min, max);
+    const nextValue = getValue(ratio, min, max);
     return nextValue;
   }
 
   private onMouseDown: React.MouseEventHandler<HTMLDivElement> = e => {
     this.mouseDown = true;
     const value = this.getValueFromEvent(e);
-    this.onChange(value);
+    const { min, max } = this.props;
+    const nextValue = withinRange(value, min, max);
+    this.onChange(nextValue);
   };
 
   private onWindowMouseUp = () => {

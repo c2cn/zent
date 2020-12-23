@@ -1,13 +1,10 @@
 import cn from 'classnames';
-import * as React from 'react';
 
 import Icon from '../../../icon';
 import { IUploadFileItem } from '../../types';
 import AbstractTrigger from '../AbstractTrigger';
 
-export default class NormalUploadTrigger extends AbstractTrigger<
-  IUploadFileItem
-> {
+export default class NormalUploadTrigger extends AbstractTrigger<IUploadFileItem> {
   renderFileItemCount() {
     const { fileList, maxAmount } = this.props;
     if (maxAmount === Infinity) {
@@ -15,7 +12,7 @@ export default class NormalUploadTrigger extends AbstractTrigger<
     }
     return (
       <span className="zent-file-upload-trigger-text-count">
-        {fileList.length}/{maxAmount}
+        {fileList?.length || 0}/{maxAmount}
       </span>
     );
   }
@@ -36,7 +33,8 @@ export default class NormalUploadTrigger extends AbstractTrigger<
       >
         <Icon type="upload" className="zent-file-upload-trigger-icon" />
         <span className="zent-file-upload-trigger-text">
-          {i18n.normal.add} {this.renderFileItemCount()}
+          {i18n.add}
+          {this.renderFileItemCount()}
         </span>
         {this.renderFileInput()}
       </div>

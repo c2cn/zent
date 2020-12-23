@@ -1,6 +1,5 @@
-import * as React from 'react';
+import { forwardRef, useMemo, useRef } from 'react';
 import cx from 'classnames';
-import { useMemo, useRef } from 'react';
 import { AlertTypes } from '../types';
 import Icon, { IconType } from '../../icon';
 import InlineLoading from '../../loading/InlineLoading';
@@ -20,7 +19,7 @@ type IAlertItemProps = Omit<IAlertProps, 'outline' | 'closed'> & {
   classItemName?: string;
 };
 
-export const AlertItem = React.forwardRef<HTMLDivElement, IAlertItemProps>(
+export const AlertItem = forwardRef<HTMLDivElement, IAlertItemProps>(
   (props, ref) => {
     const {
       extraContent,
@@ -72,16 +71,24 @@ export const AlertItem = React.forwardRef<HTMLDivElement, IAlertItemProps>(
     }, [closable, closeContent, onAlertItemClose]);
 
     const renderIcon = useMemo(() => {
-      return loading ? (
-        <InlineLoading
-          className="zent-alert-item-icon"
-          loading
-          icon="circle"
-          iconSize={16}
-        />
-      ) : type in iconTypeMap ? (
-        <Icon className="zent-alert-item-icon" type={iconTypeMap[type]} />
-      ) : null;
+      if (loading) {
+        return (
+          <InlineLoading
+            className="zent-alert-item-icon"
+            loading
+            icon="circle"
+            iconSize={16}
+          />
+        );
+      }
+
+      if (type in iconTypeMap) {
+        return (
+          <Icon className="zent-alert-item-icon" type={iconTypeMap[type]} />
+        );
+      }
+
+      return null;
     }, [loading, type]);
 
     return (

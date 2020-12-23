@@ -4,9 +4,93 @@
 
 ### 升级指南
 
+- [9.x 升级指南](./changelog-v9)
 - [7.x 升级指南](./changelog-v7)
 - [3.x 升级指南](../migrating/3x)
 - [2.1.x 升级指南](../migrating/21x)
+
+### 9.1.0(2020-12-21)
+
+- 💥 修复 `Select` 范型参数的问题，原来一个范型参数改为两个范型参数，`Select<ISelecItem<number>>` => `Select<number>`
+- ✨ 新增单文件上传组件
+- ✨ `NumberInput` 支持自定义步进
+- 🦀️ 修复 `Button` 禁用时边框的样式问题
+
+### 9.0.2(2020-12-18)
+
+- ✨ `Swiper` 支持自定义上一个/下一个按钮
+
+### 9.0.1(2020-12-18)
+
+- `Select`
+  - ✨ 支持受控模式下回填选中的值
+  - ✨ 支持自定义渲染输入框中已选择的选项列表，仅在多选模式可用
+- `Grid`
+  - ✨ `batchRender` 添加位置参数
+  - 🦀️ 修复表头分组场景下浮动列表头高度问题
+- 🦀️ `DateRangeQuickPicker` 修改今日结束时间为当前时间
+
+### 8.6.1(2020-12-18)
+
+- `Grid`
+  - 🦀️ 修复浮动列在表头分组场景下高度问题
+  - 🦀️ `batchRender` 增加渲染位置可选参数
+
+### 8.6.0(2020-12-15)
+
+- ✨ 主题色支持透明度，主题色定义兼容老版本，但老版本无法使用透明度
+- 🦀️ 调整 `Radio` 的右边距为 `24px`
+
+### 9.0.0(2020-12-14)
+
+详见 [9.x 升级指南](./changelog-v9)
+
+### 8.5.12(2020-11-05)
+
+- 🦀️ 修复 `Upload` 上传文件时顺序变化的问题
+- 🦀️ 修复 `Grid` 自定义行组件的类型
+
+### 8.5.11(2020-10-28)
+
+- 🦀️ 修复 `Form` 的类型定义问题
+- 🦀️ `WindowEventHandler` 兼容 SSR 场景
+- 🦀️ `Input` 不可编辑状态下隐藏清除按钮
+
+### 8.5.10(2020-10-22)
+
+- 修复 `Sortable` 无法将元素移动到第一个的问题
+
+### 8.5.9(2020-10-12)
+
+- `Form`
+  - 🦀️ 修复 `FormModel.prototype.owner` 不能赋值的问题
+  - 🦀️ 优化了 `value-listener` 中异步订阅的逻辑
+  - 🦀️ 类型定义优化
+- 🦀️ 修复 `Button` 部分场景下 `disabled` 处理逻辑不对的问题
+- 🦀️ 修复 `Portal` 在 SSR 场景下的报错
+- 🦀️ 修复 `ClampLines` 在文本为空时可能出现的渲染问题
+
+### 8.5.8(2020-09-11)
+
+- 🦀️ 调整 `Button` 之间的间距
+- `Form`
+  - ✨ `Field` 组件支持初始值 `initialValue`，并增加 `reset` 事件用于触发表单重置
+  - 🦀️ 修复 `state` 变更导致 `ZentForm` 不必要的重新创建
+- `Input`
+  - ✨ 增加 `onIconClick` 回调
+  - ✨ `TextareaInput` 新增 `maxCharacterCount` 属性支持文本超长及错误提示
+
+### 8.5.7(2020-08-28)
+
+- 🦀️ 修复 `Progress` 组件 `circle` 类型的 `normalColor`，`successColor`，`exceptionColor` 和 `strokeWidth` 不生效问题
+
+### 8.5.6(2020-08-21)
+
+- 🦀️ 修复 `Slider` 值超出范围的问题
+- 🦀️ 调整 `Checkbox` 之间的间距
+- `Form`
+  - 🦀️ 导出 `IMaybeError` 和 `ValidatorContext`
+  - 🦀️ 优化 `FormSelectField` 的类型定义
 
 ### 8.5.5(2020-08-14)
 
@@ -76,6 +160,10 @@
 - 🦀️ 修复 `Grid` `scroll.x` 变化时固定列阴影展示问题
 - 🦀️ 修复 `Collapse` 的类型定义
 - 🦀️ 修复 `Pagination` 跳转页码按回车没反应的问题
+
+### 8.4.0-1(2020-11-17)
+
+- 🦀️ 修复部分组件主题色不支持 CSS Variable 配置的问题
 
 ### 8.4.0(2020-03-16)
 

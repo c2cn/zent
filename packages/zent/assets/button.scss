@@ -213,7 +213,7 @@ $btn-warning-active: 1;
   }
 
   & + & {
-    margin-left: 8px;
+    margin-left: 16px;
   }
 
   &-large {
@@ -373,7 +373,7 @@ $btn-warning-active: 1;
     }
   }
 
-  &-border-transparent {
+  &#{&}-border-transparent {
     border-color: transparent;
 
     &:hover {

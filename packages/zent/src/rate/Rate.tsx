@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import classNames from 'classnames';
 import StarIcon from './star-icon';
 
@@ -16,7 +15,6 @@ export interface IRateProps {
   count: number;
   disabled?: boolean;
   style?: React.CSSProperties;
-  prefix?: string;
   readOnly?: boolean;
 }
 
@@ -29,7 +27,7 @@ export interface IRateState {
 function refArray(length: number): Array<React.RefObject<Star>> {
   const refs = [];
   for (let i = 0; i < length; i += 1) {
-    refs.push(React.createRef<Star>());
+    refs.push(createRef<Star>());
   }
   return refs;
 }
@@ -40,7 +38,6 @@ export class Rate extends Component<IRateProps, IRateState> {
     count: 5,
     allowHalf: false,
     allowClear: true,
-    prefix: 'zent',
     character: <StarIcon className="zent-rate-star-icon" />,
     readOnly: false,
   };
@@ -141,7 +138,6 @@ export class Rate extends Component<IRateProps, IRateState> {
       count,
       allowHalf,
       style,
-      prefix,
       disabled = this.context.value,
       className,
       character,
@@ -158,7 +154,6 @@ export class Rate extends Component<IRateProps, IRateState> {
           ref={starRefs[index]}
           index={index}
           disabled={disabled}
-          prefix={prefix}
           allowHalf={allowHalf}
           value={hoverValue !== null ? hoverValue : value}
           onClick={this.onClick}
@@ -171,10 +166,10 @@ export class Rate extends Component<IRateProps, IRateState> {
     return (
       <ul
         className={classNames(
-          `${prefix}-rate`,
+          'zent-rate',
           {
-            [`${prefix}-rate-disabled`]: disabled,
-            [`${prefix}-rate-readonly`]: readOnly,
+            'zent-rate-disabled': disabled,
+            'zent-rate-readonly': readOnly,
           },
           className
         )}

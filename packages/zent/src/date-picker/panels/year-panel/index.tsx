@@ -1,15 +1,13 @@
-import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import PanelHeader from '../../components/PanelHeader';
 import YearPanelBody from './YearBody';
 
 import { MAX_YEAR, MIN_YEAR, MAX_PAGE } from '../../constants';
 import { ISinglePanelProps } from '../../types';
 
-const YearPickerPanel: React.FC<Omit<
-  ISinglePanelProps,
-  'rangeDate' | 'hoverRangeDate'
->> = props => {
+const YearPickerPanel: React.FC<
+  Omit<ISinglePanelProps, 'rangeDate' | 'hoverRangeDate'>
+> = props => {
   const { defaultPanelDate } = props;
   const tempYear = defaultPanelDate.getFullYear();
   const [page, setPage] = useState<number>(
@@ -17,13 +15,10 @@ const YearPickerPanel: React.FC<Omit<
   );
   const firstYear = useMemo(() => MIN_YEAR + page * 12, [page]);
 
-  const onClickPrev = React.useCallback(() => page > 0 && setPage(page - 1), [
+  const onClickPrev = useCallback(() => page > 0 && setPage(page - 1), [page]);
+  const onClickNext = useCallback(() => page < MAX_PAGE && setPage(page + 1), [
     page,
   ]);
-  const onClickNext = React.useCallback(
-    () => page < MAX_PAGE && setPage(page + 1),
-    [page]
-  );
   return (
     <>
       <PanelHeader

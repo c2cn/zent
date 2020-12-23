@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import cx from 'classnames';
 import Icon, { IconType } from '../icon';
 
@@ -17,7 +16,6 @@ export interface IAvatarProps {
   bordered: boolean;
   style?: React.CSSProperties;
   className?: string;
-  prefix: string;
 }
 
 export interface IAvatarState {
@@ -31,11 +29,10 @@ export class Avatar extends Component<IAvatarProps, IAvatarState> {
     shape: 'circle',
     size: 'default',
     bordered: false,
-    prefix: 'zent',
   };
 
-  textNodeRef = React.createRef<HTMLSpanElement>();
-  avatarNodeRef = React.createRef<HTMLSpanElement>();
+  textNodeRef = createRef<HTMLSpanElement>();
+  avatarNodeRef = createRef<HTMLSpanElement>();
 
   state = {
     textScale: 1,
@@ -44,7 +41,6 @@ export class Avatar extends Component<IAvatarProps, IAvatarState> {
 
   render() {
     const {
-      prefix,
       size,
       shape,
       src,
@@ -56,22 +52,22 @@ export class Avatar extends Component<IAvatarProps, IAvatarState> {
     } = this.props;
     const useImage = !!src;
     const useString = !!children;
-    const cls = cx(`${prefix}-avatar`, className, {
-      [`${prefix}-avatar--size-large`]: size === 'large',
-      [`${prefix}-avatar--size-default`]: size === 'default',
-      [`${prefix}-avatar--size-small`]: size === 'small',
-      [`${prefix}-avatar--shape-circle`]: shape === 'circle',
-      [`${prefix}-avatar--shape-square`]: shape === 'square',
-      [`${prefix}-avatar--type-icon`]: !!icon,
-      [`${prefix}-avatar--type-image`]: useImage,
-      [`${prefix}-avatar--type-string`]: useString,
-      [`${prefix}-avatar--bordered`]: bordered,
+    const cls = cx('zent-avatar', className, {
+      'zent-avatar--size-large': size === 'large',
+      'zent-avatar--size-default': size === 'default',
+      'zent-avatar--size-small': size === 'small',
+      'zent-avatar--shape-circle': shape === 'circle',
+      'zent-avatar--shape-square': shape === 'square',
+      'zent-avatar--type-icon': !!icon,
+      'zent-avatar--type-image': useImage,
+      'zent-avatar--type-string': useString,
+      'zent-avatar--bordered': bordered,
     });
 
     if (useImage) {
       return (
         <span style={style} className={cls}>
-          <img className={`${prefix}-avatar-image`} src={src} alt="avatar" />
+          <img className="zent-avatar-image" src={src} alt="avatar" />
         </span>
       );
     }
@@ -118,7 +114,7 @@ export class Avatar extends Component<IAvatarProps, IAvatarState> {
     return (
       <span style={avatarStyle} className={cls} ref={this.avatarNodeRef}>
         <span
-          className={`${prefix}-avatar-string`}
+          className="zent-avatar-string"
           style={textStyle}
           ref={this.textNodeRef}
         >

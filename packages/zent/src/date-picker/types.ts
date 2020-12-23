@@ -17,15 +17,48 @@ export enum RangeTypeMap {
   START = 'start',
   END = 'end',
 }
+/* ******************************** valueType & onChange ******************************** */
+// prettier-ignore
+interface IValueTypeSingleMap {
+  'string': string;
+  'number': number;
+  'date': Date;
+}
+// prettier-ignore
+interface IValueTypeSingleSpecialMap {
+  'string': [string, string];
+  'number': [number, number];
+  'date': [Date, Date];
+}
+// prettier-ignore
+export interface IValueTypeRangeMap {
+  'string': [string | null, string | null];
+  'number': [number | null, number | null];
+  'date': [Date | null, Date | null];
+}
+
+export interface ISingleRelatedType<T extends IValueType> {
+  valueType?: T;
+  onChange: (date: IValueTypeSingleMap[T] | null) => void;
+}
+export interface ISingleSpecialRelatedType<T extends IValueType> {
+  valueType?: T;
+  onChange: (date: IValueTypeSingleSpecialMap[T] | null) => void;
+}
+export interface IRangeRelatedType<T extends IValueType> {
+  valueType?: T;
+  onChange: (date: IValueTypeRangeMap[T] | null) => void;
+}
+/* ******************************** valueType & onChange ******************************** */
 
 export interface IDisabledDateSimple<T = SingleDate> {
   min?: T;
   max?: T;
 }
 export type IDisabledDateFunc = (date: Date) => boolean;
-export type IRangeDisabledDateFunc = (date?: Date, type?: RangeType) => boolean;
+export type IRangeDisabledDateFunc = (date: Date, type?: RangeType) => boolean;
 interface ICommonProps<DateValue = SingleDate> {
-  value: DateValue;
+  value: DateValue | null;
   onChange: (date: SingleDate | RangeDate | null) => void;
   defaultDate?: DateValue;
   valueType?: IValueType;
@@ -43,7 +76,6 @@ export interface IDateCellBase {
   isCurrent?: boolean;
   isDisabled?: boolean;
   isInView?: boolean;
-  isHover?: boolean;
   isInRange?: boolean;
   isInHoverRange?: boolean;
 }
@@ -59,10 +91,20 @@ interface ITriggerCommonProps {
   onClearInput: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
 
-export interface IShowTimeOption<T>
-  extends Omit<ITimePickerBase<T>, 'className' | 'selectedDate'> {}
+export interface IShowTimeOptionBase<T>
+  extends Omit<
+    ITimePickerBase<T>,
+    'className' | 'selectedDate' | 'defaultTime'
+  > {}
+export interface IShowTimeOption<T> extends IShowTimeOptionBase<T> {
+  defaultTime?: T | ((date: Date) => T);
+}
+export interface IShowTimeRangeOption<T> extends IShowTimeOptionBase<T> {
+  defaultTime?: [T | ((date: Date) => T), T | ((date: Date) => T)];
+}
 
 export type IShowTime<T = string> = boolean | IShowTimeOption<T>;
+export type IShowTimeRange<T = string> = boolean | IShowTimeRangeOption<T>;
 export type IShowTimeOptionWithDefault = PartialRequired<
   IShowTimeOption<string>,
   'format' | 'defaultTime'
@@ -77,10 +119,10 @@ export interface ISingleProps extends ICommonProps<SingleDate> {
   name?: string;
 }
 // 季度、周组件
-export interface ISingleSepcialProps
+export interface ISingleSpecialProps
   extends Omit<ISingleProps, 'value' | 'defaultDate'> {
-  value: [SingleDate, SingleDate];
-  defaultDate?: [SingleDate, SingleDate];
+  value: SingleDate | RangeDate | null;
+  defaultDate?: SingleDate | RangeDate;
 }
 
 export type ISinglePropsWithDefault = PartialRequired<
@@ -116,6 +158,7 @@ export interface IRangeProps extends ICommonProps<RangeDate> {
   onOpen?: (type?: RangeType) => void;
   onClose?: (type?: RangeType) => void;
   name?: [string, string];
+  dateSpan?: number; // 快捷可选日期跨度
 }
 export type IRangePropsWithDefault = PartialRequired<
   IRangeProps,
@@ -123,7 +166,7 @@ export type IRangePropsWithDefault = PartialRequired<
 >;
 
 export interface IRangeTriggerProps extends ITriggerCommonProps {
-  value: RangeDate;
+  value: RangeDate | null;
   placeholder: StringTuple;
   name?: StringTuple;
 }
@@ -201,16 +244,16 @@ export interface ITimePanelProps<T = SingleTime> {
   onSelected: (val: T, status?: boolean) => void;
   format: string;
   defaultTime?: T;
-  disabledTimesOption: IDisabledTimeOption;
+  disabledTimeOption: IDisabledTimeOption;
   hourStep?: number;
   minuteStep?: number;
   secondStep?: number;
   hideFooter?: boolean;
 }
 export interface ICombinedTimePanelProps
-  extends Omit<ITimePanelProps<RangeTime>, 'disabledTimesOption'> {
-  disabledTimesOptionStart: IDisabledTimeOption;
-  disabledTimesOptionEnd: IDisabledTimeOption;
+  extends Omit<ITimePanelProps<RangeTime>, 'disabledTimeOption'> {
+  disabledTimeOptionStart: IDisabledTimeOption;
+  disabledTimeOptionEnd: IDisabledTimeOption;
 }
 
 export interface IDisabledTimeOption {

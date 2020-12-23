@@ -1,9 +1,7 @@
-import * as React from 'react';
+import { createContext } from 'react';
 import { IIMECompositionContext } from './types';
 
-export const IMECompositionContext = React.createContext<
-  IIMECompositionContext
->({
+export const IMECompositionContext = createContext<IIMECompositionContext>({
   enable: false,
 });
 

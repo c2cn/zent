@@ -2,7 +2,6 @@
 @import './theme/font';
 
 $border-radius: 2px;
-$focus-box-shadow: $shadow-spec-focus;
 $border-transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 $normal-size: 32px;
 $small-size: 24px;
@@ -50,7 +49,7 @@ $large-size: 40px;
 
   &.zent-input--has-focus:not(.zent-input-wrapper__not-editable) {
     @include theme-color(border-color, primary, 4);
-    box-shadow: $focus-box-shadow;
+    @include theme-shadow(focus);
   }
 
   &__not-editable {
@@ -66,16 +65,19 @@ $large-size: 40px;
     }
   }
 
+  .zent-input-icon,
+  .zent-input-close {
+    display: block;
+    margin-right: 8px;
+    cursor: pointer;
+  }
+
   .zent-input-icon {
     @include theme-color(color, stroke, 3);
-    display: block;
-    margin-right: 10px;
   }
 
   .zent-input-close {
-    @include theme-color(color, stroke, 5);
-    display: block;
-    margin-right: 10px;
+    @include theme-color(color, stroke, 4);
   }
 }
 
@@ -105,7 +107,7 @@ $large-size: 40px;
   min-width: 80px;
   height: 100%;
   box-sizing: border-box;
-  padding: 0 10px;
+  padding: 0 12px;
   margin: 0;
   font-size: $font-size-normal;
   box-shadow: none;
@@ -148,22 +150,22 @@ $large-size: 40px;
 }
 
 .zent-textarea {
-  height: 54px;
-  padding: 5px 10px;
+  height: 76px;
+  padding: 6px 12px;
   appearance: none;
   line-height: 1.5;
 
   &-with-count {
-    padding-bottom: 21px;
+    padding-bottom: 31px;
   }
 
   &-count {
     @include theme-color(color, stroke, 3);
     display: inline-block;
     position: absolute;
-    bottom: 2px;
-    right: 15px;
-    font-size: 10px;
+    bottom: 8px;
+    right: 12px;
+    font-size: $font-size-small;
   }
 }
 
@@ -180,6 +182,16 @@ $large-size: 40px;
 
     &__not-editable {
       @include theme-color(border-color, stroke, 5);
+    }
+
+    &.zent-textarea-wrapper.zent-textarea-wrapper-out-of-range {
+      @include theme-color(border-color, error, 4);
+      border-width: 1px;
+      border-style: solid;
+
+      .zent-textarea-out-of-range-text {
+        @include theme-color(color, error, 4);
+      }
     }
   }
 }

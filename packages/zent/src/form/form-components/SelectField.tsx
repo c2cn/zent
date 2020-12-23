@@ -1,16 +1,14 @@
-import * as React from 'react';
-import { Omit } from 'utility-types';
 import { IFormComponentProps, IFormFieldChildProps } from '../shared';
 import Select, { ISelectProps, ISelectItem } from '../../select';
 import { FormField } from '../Field';
 
-export type IFormSelectFieldProps<T extends ISelectItem> = IFormComponentProps<
+export type IFormSelectFieldProps<
+  Key extends string | number = string | number,
+  T extends ISelectItem<Key> = ISelectItem<Key>
+> = IFormComponentProps<
   (T | null) | T[],
-  Omit<ISelectProps<T>, 'value' | 'multiple' | 'onChange'>
-> & {
-  multiple?: boolean;
-  options: T[];
-};
+  Omit<ISelectProps<Key, T>, 'value' | 'onChange'>
+>;
 
 function renderSelect(
   childProps: IFormFieldChildProps<any>,
@@ -19,11 +17,15 @@ function renderSelect(
   return <Select {...(props.props as any)} {...childProps} />;
 }
 
-export function FormSelectField<T extends ISelectItem>(
-  props: IFormSelectFieldProps<T>
-) {
+export function FormSelectField<
+  Key extends string | number = string | number,
+  T extends ISelectItem<Key> = ISelectItem<Key>
+>(props: IFormSelectFieldProps<Key, T>) {
   return (
-    <FormField {...props} defaultValue={props.multiple ? [] : null}>
+    <FormField
+      {...props}
+      defaultValue={props.defaultValue ?? (props.props?.multiple ? [] : null)}
+    >
       {childProps => renderSelect(childProps, props)}
     </FormField>
   );

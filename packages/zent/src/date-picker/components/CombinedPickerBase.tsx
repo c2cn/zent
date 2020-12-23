@@ -1,5 +1,5 @@
-import * as React from 'react';
 import cx from 'classnames';
+import { useCallback, useContext, useMemo, useRef, useState } from 'react';
 
 import { CombinedInputTrigger } from './PickerTrigger';
 import PickerPopover from './PickerPopover';
@@ -36,21 +36,22 @@ export const CombinedPicker: React.FC<ICombinedPickerProps> = ({
   onChange,
   onOpen,
   onClose,
+  dateSpan,
   disabledDate: disabledDateProps,
+  disabled,
   ...restProps
 }) => {
-  const restPropsRef = React.useRef(restProps);
+  const restPropsRef = useRef(restProps);
   restPropsRef.current = restProps;
   const {
     defaultDate,
     format,
     className,
     openPanel,
-    disabled,
     generateDate,
     PanelComponent,
   } = restPropsRef.current;
-  const { getInputRangeText } = React.useContext(PickerContext);
+  const { getInputRangeText } = useContext(PickerContext);
   // props onChangeRef
   const onChangeRef = useEventCallbackRef(onChange);
 
@@ -83,19 +84,20 @@ export const CombinedPicker: React.FC<ICombinedPickerProps> = ({
 
   // rangeDisabledDate
   const disabledDate = useNormalizeDisabledDate(format, disabledDateProps);
-  const [disabledStartDate, disabledEndDate] = useRangeDisabledDate({
+  const [disabledStartDate, disabledEndDate] = useRangeDisabledDate(
     selected,
     disabledDate,
     generateDate,
-    pickerType: 'combined',
-  });
+    'combined',
+    dateSpan
+  );
 
   // hover date
-  const [hoverDate, setHoverDate] = React.useState<Date>();
+  const [hoverDate, setHoverDate] = useState<Date>();
   // hover range date
   const hoverRangeDate = useHoverRange(selected, hoverDate);
   // rangeDate
-  const rangeDate = React.useMemo<DateTuple | null>(() => {
+  const rangeDate = useMemo<DateTuple | null>(() => {
     const [startRangeDate, endRangeDate] = selected;
     return startRangeDate && endRangeDate
       ? [startRangeDate, endRangeDate]
@@ -107,7 +109,7 @@ export const CombinedPicker: React.FC<ICombinedPickerProps> = ({
    * @param finish {boolean} 标识是否完成全部选择，处理清空、日期时间等特殊清空
    *
    */
-  const onSelected = React.useCallback(
+  const onSelected = useCallback(
     (val: DateNullTuple, finish = false) => {
       setSelected(val);
       // 日期范围选择结束、手动触发清空操作
@@ -123,7 +125,7 @@ export const CombinedPicker: React.FC<ICombinedPickerProps> = ({
   );
 
   // onClear
-  const onClearInput = React.useCallback(
+  const onClearInput = useCallback(
     evt => {
       evt.stopPropagation();
       onChangeRef.current?.([null, null]);
@@ -132,17 +134,18 @@ export const CombinedPicker: React.FC<ICombinedPickerProps> = ({
   );
 
   // trigger-input text
-  const text = React.useMemo(() => getInputRangeText?.(selected), [
+  const text = useMemo(() => getInputRangeText?.(selected), [
     selected,
     getInputRangeText,
   ]);
 
-  const trigger = React.useMemo(() => {
+  const trigger = useMemo(() => {
     const triggerProps = pick(restPropsRef.current, triggerCommonProps);
     return (
       <div>
         <CombinedInputTrigger
           {...triggerProps}
+          disabled={disabled}
           selected={selected}
           value={value}
           text={text}
@@ -151,8 +154,17 @@ export const CombinedPicker: React.FC<ICombinedPickerProps> = ({
         />
       </div>
     );
-  }, [selected, text, value, panelVisible, restPropsRef, onClearInput]);
-  const content = React.useMemo(() => {
+  }, [
+    selected,
+    text,
+    value,
+    panelVisible,
+    restPropsRef,
+    disabled,
+    onClearInput,
+  ]);
+
+  const content = useMemo(() => {
     return (
       <div className="zent-datepicker-combined-panel">
         <PanelComponent
@@ -178,6 +190,7 @@ export const CombinedPicker: React.FC<ICombinedPickerProps> = ({
     disabledStartDate,
     disabledEndDate,
     onSelected,
+    PanelComponent,
   ]);
 
   return (

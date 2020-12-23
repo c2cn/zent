@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import cx from 'classnames';
 import isEqual from '../utils/isEqual';
@@ -41,7 +41,6 @@ export interface IMentionProps {
   suggestionNotFoundContent?: React.ReactNode;
   triggerText?: string;
   className?: string;
-  prefix?: string;
   loading?: boolean;
   type?: string;
   onBlur?: React.FocusEventHandler;
@@ -50,14 +49,13 @@ export interface IMentionProps {
   inline?: boolean;
 }
 
-export class Mention extends React.Component<IMentionProps> {
+export class Mention extends Component<IMentionProps> {
   static defaultProps = {
     multiLine: false,
     position: 'bottom',
     suggestionNotFoundContent: '',
     suggestions: [],
     triggerText: '@',
-    prefix: 'zent',
     inline: true,
   };
 
@@ -93,7 +91,6 @@ export class Mention extends React.Component<IMentionProps> {
       type,
 
       className,
-      prefix,
       inline,
       ...passThroughProps
     } = this.props;

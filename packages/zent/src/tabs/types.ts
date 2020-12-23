@@ -22,7 +22,7 @@ export interface IInnerTab<Id> extends ITab<Id> {
 export type IVerticalInnerTab<Id> = IInnerTab<Id> | IVerticalDivide;
 
 export type TabType = 'normal' | 'card' | 'button';
-
+export type ITabOverflowMode = 'slide' | 'anchor';
 export interface ITabPanelProps<Id> {
   id: Id;
   tab: React.ReactNode;
@@ -44,6 +44,7 @@ export interface IBaseTabsProps<Id, TabPanelProps> {
   className?: string;
   tabs?: Array<ITab<Id>>;
   unmountPanelOnHide?: boolean;
+  disableLazyMount?: boolean;
   children?:
     | ITabPanelElement<TabPanelProps>
     | Array<ITabPanelElement<TabPanelProps>>;
@@ -55,6 +56,7 @@ export interface ITabsProps<Id> extends IBaseTabsProps<Id, ITabPanelProps<Id>> {
   stretch: boolean;
   navExtraContent: React.ReactNode;
   type?: TabType;
+  overflowMode?: ITabOverflowMode;
 }
 
 export interface IVerticalTabsProps<Id>
@@ -73,6 +75,8 @@ export interface ITabsNavProps<Id>
   candel: boolean;
   stretch: boolean;
   navExtraContent: React.ReactNode;
+  type: TabType;
+  overflowMode: ITabOverflowMode;
 }
 
 export interface IVerticalTabsNavProps<Id>

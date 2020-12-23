@@ -1,6 +1,6 @@
-import React from 'react';
+import { Component } from 'react';
 import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import Swiper from 'swiper';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -9,11 +9,6 @@ describe('Swiper', () => {
   it('className default to zent-swiper ', () => {
     const wrapper = mount(<Swiper />);
     expect(wrapper.children().hasClass('zent-swiper')).toBe(true);
-  });
-
-  it('can have custom prefix', () => {
-    const wrapper = mount(<Swiper prefix="dwb" />);
-    expect(wrapper.children().hasClass('dwb-swiper')).toBe(true);
   });
 
   it('can have custom className', () => {
@@ -37,7 +32,7 @@ describe('Swiper', () => {
 
   it('can change page', () => {
     const childs = [1, 2, 3];
-    class Test extends React.Component {
+    class Test extends Component {
       render() {
         return (
           <Swiper arrows>
@@ -59,10 +54,7 @@ describe('Swiper', () => {
         .hasClass('zent-swiper__dots-item-active')
     ).toBe(true);
     expect(wrapper.find('.swiper-text-child').length).toBe(5);
-    wrapper
-      .find('.zent-swiper__arrow')
-      .at(0)
-      .simulate('click');
+    wrapper.find('.zent-swiper__arrow').at(0).simulate('click');
     jest.runOnlyPendingTimers();
     expect(
       wrapper
@@ -70,20 +62,14 @@ describe('Swiper', () => {
         .at(2)
         .hasClass('zent-swiper__dots-item-active')
     ).toBe(true);
-    wrapper
-      .find('.zent-swiper__dots-item')
-      .at(2)
-      .simulate('click');
+    wrapper.find('.zent-swiper__dots-item').at(2).simulate('click');
     expect(
       wrapper
         .find('.zent-swiper__dots-item')
         .at(2)
         .hasClass('zent-swiper__dots-item-active')
     ).toBe(true);
-    wrapper
-      .find('.zent-swiper__arrow')
-      .at(1)
-      .simulate('click');
+    wrapper.find('.zent-swiper__arrow').at(1).simulate('click');
     jest.runOnlyPendingTimers();
     expect(
       wrapper
@@ -91,10 +77,7 @@ describe('Swiper', () => {
         .at(0)
         .hasClass('zent-swiper__dots-item-active')
     ).toBe(true);
-    wrapper
-      .find('.zent-swiper__dots-item')
-      .at(2)
-      .simulate('click');
+    wrapper.find('.zent-swiper__dots-item').at(2).simulate('click');
     expect(
       wrapper
         .find('.zent-swiper__dots-item')
@@ -105,7 +88,7 @@ describe('Swiper', () => {
 
   it('can set props', () => {
     const childs = [1, 2, 3];
-    class Test extends React.Component {
+    class Test extends Component {
       render() {
         return (
           <Swiper
@@ -136,10 +119,7 @@ describe('Swiper', () => {
     ).toBe(true);
     wrapper.simulate('mouseEnter');
     wrapper.simulate('mouseLeave');
-    wrapper
-      .find('.zent-swiper__dots-item')
-      .at(1)
-      .simulate('click');
+    wrapper.find('.zent-swiper__dots-item').at(1).simulate('click');
     expect(
       wrapper
         .find('.zent-swiper__dots-item')
@@ -150,7 +130,7 @@ describe('Swiper', () => {
 
   it('can have customize dotsColor', () => {
     const childs = [1, 2, 3];
-    class Test extends React.Component {
+    class Test extends Component {
       render() {
         return (
           <Swiper dotsColor="#fff">

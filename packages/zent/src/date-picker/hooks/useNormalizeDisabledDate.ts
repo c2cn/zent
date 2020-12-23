@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 import { IDisabledDate } from '../types';
 import unifiedDisabledDateFromProps from '../utils/unifiedDisabledDateFromProps';
 
@@ -6,7 +6,8 @@ export default function useNormalizeDisabledDate(
   format: string,
   disabledDate: IDisabledDate
 ) {
-  const normalizedDisabledDate = React.useCallback(
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const normalizedDisabledDate = useCallback(
     unifiedDisabledDateFromProps(format, disabledDate),
     [disabledDate, format]
   );

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import cx from 'classnames';
 
 import { I18nReceiver as Receiver, II18nLocaleSweetalert } from '../i18n';
@@ -20,7 +19,6 @@ export namespace Sweetalert {
     maskClosable?: boolean;
     parentComponent?: any;
     className?: string;
-    prefix?: string;
     onCancel?: ActionButtonClickHandler;
     onClose?: () => void;
   }
@@ -51,7 +49,6 @@ function sweet(
 ) {
   const {
     className = '',
-    prefix = 'zent',
     confirmType = 'primary',
     closeBtn = false,
     maskClosable = false,
@@ -72,10 +69,8 @@ function sweet(
   const renderTitle = (i18n: II18nLocaleSweetalert) => {
     const icon = TitleIconMap[type];
     return (
-      <div className={`${prefix}-sweetalert-${type ? 'icon-' : ''}title`}>
-        {type && (
-          <Icon className={`${prefix}-sweetalert-type-icon`} type={icon} />
-        )}
+      <div className={`zent-sweetalert-${type ? 'icon-' : ''}title`}>
+        {type && <Icon className="zent-sweetalert-type-icon" type={icon} />}
         {title || i18n.title}
       </div>
     );
@@ -89,7 +84,7 @@ function sweet(
           <ActionButton
             key="sweetalert-cancel"
             type="default"
-            className={`${prefix}-sweetalert-${sweetType}-btn-cancel`}
+            className={`zent-sweetalert-${sweetType}-btn-cancel`}
             getClose={() => close}
             onClick={onCancel}
             text={cancelText || i18n.cancel}
@@ -98,7 +93,7 @@ function sweet(
         <ActionButton
           key="sweetalert-confirm"
           type={confirmType}
-          className={`${prefix}-sweetalert-${sweetType}-btn-confirm`}
+          className={`zent-sweetalert-${sweetType}-btn-confirm`}
           getClose={() => close}
           onClick={onConfirm}
           text={confirmText || (isAlert ? i18n.ok : i18n.confirm)}
@@ -108,10 +103,9 @@ function sweet(
   };
 
   close = openDialog({
-    prefix,
     closeBtn,
     maskClosable,
-    className: cx(`${prefix}-sweetalert-${sweetType}`, {
+    className: cx(`zent-sweetalert-${sweetType}`, {
       [className]: !!className,
     }),
     title: <Receiver componentName="Sweetalert">{renderTitle}</Receiver>,
@@ -134,7 +128,7 @@ export function confirm(config: Sweetalert.IConfirmOption = {}) {
   return sweet(config, 'confirm');
 }
 
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export const Sweetalert = {
   alert,
   info,

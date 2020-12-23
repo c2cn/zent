@@ -1,7 +1,6 @@
-import React from 'react';
 import Enzyme, { mount } from 'enzyme';
 import Badge from 'badge';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -19,11 +18,6 @@ describe('Badge', () => {
   it('can have custom className', () => {
     const wrapper = mount(<Badge className="news-badge">news</Badge>);
     expect(wrapper.find('.zent-badge.news-badge').length).toBe(1);
-  });
-
-  it('can have custom prefix', () => {
-    const wrapper = mount(<Badge prefix="book">book</Badge>);
-    expect(wrapper.find('.book-badge').length).toBe(1);
   });
 
   it('show diaplay max count when count exceed max count', () => {

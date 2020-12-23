@@ -1,6 +1,5 @@
-import React from 'react';
 import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import Steps from 'steps';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -22,17 +21,6 @@ describe('Steps', () => {
     expect(wrapper.find('Step').length).toBe(3);
   });
 
-  it('custom className and prefix', () => {
-    const wrapper = mount(
-      <Steps className="custom-steps" prefix="django">
-        <Step title="第一步" />
-        <Step title="第二步" />
-        <Step title="第三步" />
-      </Steps>
-    );
-    expect(wrapper.find('.custom-steps.django-steps').length).toBe(1);
-  });
-
   it('current step', () => {
     const ensure = current => {
       current = current || 1;
@@ -43,7 +31,9 @@ describe('Steps', () => {
           <Step title="第三步" />
         </Steps>
       );
-      expect(wrapper.find('.zent-steps-item.is-current').length).toBe(1);
+      expect(
+        wrapper.find('.zent-steps-item.zent-steps-item--current').length
+      ).toBe(1);
     };
     ensure();
     ensure(1);
@@ -87,10 +77,7 @@ describe('Steps', () => {
     expect(wrapper.find('.zent-steps-breadcrumb').length).toBe(1);
     expect(clicked).toBe(false);
     wrapper.setProps({ sequence: false });
-    wrapper
-      .find('.zent-steps-item')
-      .last()
-      .simulate('click');
+    wrapper.find('.zent-steps-item').last().simulate('click');
     expect(clicked).toBe(true);
   });
 
@@ -136,6 +123,8 @@ describe('Steps', () => {
       </Steps>
     );
     expect(wrapper.find('.zent-steps-tabs').length).toBe(1);
-    expect(wrapper.find('.zent-steps-item.is-current').length).toBe(1);
+    expect(
+      wrapper.find('.zent-steps-item.zent-steps-item--current').length
+    ).toBe(1);
   });
 });

@@ -28,7 +28,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js', '.md'],
     alias: Object.assign({
       zent$: path.resolve(__dirname, '../zent'),
-      'zent-utils': path.resolve(__dirname, '../../packages/zent/src/utils'),
+      'zent/es': path.resolve(__dirname, '../../packages/zent/src'),
     }),
   },
 
@@ -145,6 +145,10 @@ module.exports = {
             loader: 'awesome-typescript-loader',
             options: {
               useCache: false,
+              configFileName: path.resolve(
+                __dirname,
+                DEV ? '../tsconfig.json' : '../tsconfig-prod.json'
+              ),
               getCustomTransformers: program => ({
                 before: [
                   tsCompilerConstantsPlugin(program),

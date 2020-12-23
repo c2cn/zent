@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { FC, useContext } from 'react';
+import { useMemo, useCallback, FC, useContext } from 'react';
 import {
   startOfMonth,
   setYear,
@@ -24,6 +23,7 @@ const ROW_COUNT = 6;
 
 interface IDatePickerBodyProps extends ISingleDateBodyProps {
   popText?: string;
+  disableRangeOverView?: boolean;
   showTime?: IShowTime;
   showTimeOption?: IShowTimeOptionWithDefault;
 }
@@ -32,6 +32,7 @@ const DatePickerBody: FC<IDatePickerBodyProps> = props => {
   const {
     selected,
     popText = '',
+    disableRangeOverView = false,
     defaultPanelDate,
     rangeDate,
     hoverRangeDate,
@@ -42,11 +43,11 @@ const DatePickerBody: FC<IDatePickerBodyProps> = props => {
     disabledPanelDate,
   } = props;
 
-  const startDateOfMonth = React.useMemo(() => startOfMonth(defaultPanelDate), [
+  const startDateOfMonth = useMemo(() => startOfMonth(defaultPanelDate), [
     defaultPanelDate,
   ]);
 
-  const cells = React.useMemo(
+  const cells = useMemo(
     () =>
       getPanelCellsData({
         offset: startDateOfMonth.getDay(),
@@ -59,8 +60,10 @@ const DatePickerBody: FC<IDatePickerBodyProps> = props => {
         col,
         dateConfig: dateConfig.date,
         inView: isSameMonth,
+        disableRangeOverView,
       }),
     [
+      disableRangeOverView,
       selected,
       rangeDate,
       hoverRangeDate,
@@ -71,13 +74,14 @@ const DatePickerBody: FC<IDatePickerBodyProps> = props => {
     ]
   );
 
-  const setSelectedDate = React.useCallback(
+  const setSelectedDate = useCallback(
     (val: Date) => {
+      const { defaultTime, format } = showTimeOption || {};
+      const defaultTimeFn = () =>
+        typeof defaultTime === 'function' ? defaultTime(val) : defaultTime;
       if (!selected) {
         return onSelected(
-          showTimeOption
-            ? parse(showTimeOption.defaultTime, showTimeOption.format, val)
-            : val
+          defaultTime ? parse(defaultTimeFn(), format, val) : val
         );
       }
       let selectedDate = selected;
@@ -85,7 +89,11 @@ const DatePickerBody: FC<IDatePickerBodyProps> = props => {
       selectedDate = setMonth(selectedDate, val.getMonth());
       selectedDate = setDate(selectedDate, val.getDate());
 
-      onSelected(selectedDate);
+      onSelected(
+        defaultTime
+          ? parse(defaultTimeFn(), format, selectedDate)
+          : selectedDate
+      );
     },
     [selected, showTimeOption, onSelected]
   );

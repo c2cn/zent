@@ -1,18 +1,20 @@
-import * as React from 'react';
-import { ISelectItem } from './Select';
+import { memo } from 'react';
+import type { ISelectItem, ISelectCommonProps } from './Select';
 import Tag from './Tag';
 
-export interface ISelectTagListProps<Item extends ISelectItem> {
+export interface ISelectTagListProps<
+  Key extends string | number = string | number,
+  Item extends ISelectItem<Key> = ISelectItem<Key>
+> {
   list: Item[];
   onRemove(item: Item): void;
-  renderValue?: (item: Item) => void;
+  renderValue?: ISelectCommonProps<Key, Item>['renderValue'];
 }
 
-function SelectTagList<Item extends ISelectItem>({
-  list,
-  onRemove,
-  renderValue,
-}: ISelectTagListProps<Item>) {
+function SelectTagList<
+  Key extends string | number = string | number,
+  Item extends ISelectItem<Key> = ISelectItem<Key>
+>({ list, onRemove, renderValue }: ISelectTagListProps<Key, Item>) {
   return (
     <>
       {list.map(it => (
@@ -20,11 +22,11 @@ function SelectTagList<Item extends ISelectItem>({
           key={it.key}
           item={it}
           onRemove={onRemove}
-          renderValue={renderValue}
+          renderValue={renderValue as any}
         />
       ))}
     </>
   );
 }
 
-export default React.memo(SelectTagList);
+export default memo(SelectTagList);

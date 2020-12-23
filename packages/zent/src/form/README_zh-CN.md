@@ -62,6 +62,23 @@ scatter: true
 - `Model` 模式还支持[以下参数](../../apidoc/interfaces/iformfieldmodeldrivenprops.html)。注意，此模式下校验规则正常是设置在 model 上的，而不是表单项组件上。
 - 在 `View` 模式下使用 `FieldArray` 时，由于该组件的特殊性，虽然此时传给 `Field` 的是 `model`（按上述规则这就是 `Model` 模式），但是校验规则还是需要设置在表单项上。
 
+### 基础能力
+
+`form` 对象具备一些基础的能力：
+
+- `form.submit` 显式触发表单提交事件，会自动触发表单校验。
+- `form.validate` 触发一次表单校验。
+- `form.patchValue` 为给定的字段赋值。
+- `form.initialize` 为给定的字段赋值，同时将这个值作为 `initialValue` 。
+- `form.reset` 显式触发表单重置事件，将所有字段重置为 `initialValue` ，如果 `initialValue` 不存在，则使用 `defaultValue` 。
+- `form.resetValue` 将所有字段重置为 `initialValue` ，不会触发表单事件，如果 `initialValue` 不存在，则使用 `defaultValue` 。
+- `form.clear` 将所有字段赋值为 `defaultValue` ，同时清空 `initialValue` 。
+
+注：
+
+- `initialValue`：初始值，在逻辑上作为表单首次展示的值，可以被更新。
+- `defaultValue`：缺省值，在表单没有输入时使用的值，组件一旦渲染就不可再被更新。
+
 <!-- demo-slot-1 -->
 <!-- demo-slot-2 -->
 <!-- demo-slot-18 -->
@@ -103,6 +120,16 @@ type SyncValidator<T> = (value: T, ctx: ValidatorContext<T>) => IMaybeError<T>;
 <!-- demo-slot-4 -->
 <!-- demo-slot-5 -->
 
+#### 校验状态
+
+Zent 提供了 2 种监听表单校验状态的方法：
+
+- `Form.FieldValid`：接收 `name` 或 `model`，将其校验状态作为 `children` 的第一个参数
+- `Form.useFieldValid`：接收 `name` 或 `model`，返回其校验状态
+- `Form.useFormValid`：接收 `ZentForm` 对象（即 `useForm` 的返回值），返回表单的校验状态
+
+<!-- demo-slot-19 -->
+
 ### 校验选项
 
 校验选项共有以下几种：
@@ -121,7 +148,7 @@ type SyncValidator<T> = (value: T, ctx: ValidatorContext<T>) => IMaybeError<T>;
 
 ### 校验中间件
 
-校验中间件作用于**校验函数本身**，可以把它视作用来装饰函数的装饰器；通过中间件可以为内置的校验函数提供一些额外能力；使用 `FieldUtils.compose` 可以将多个中间件组合成一个；
+校验中间件作用于**校验函数本身**，可以把它视作用来装饰函数的装饰器；通过中间件可以为内置的校验函数提供一些额外能力，例如条件校验；使用 `FieldUtils.compose` 可以将多个中间件组合成一个；
 
 校验中间件的函数签名：
 
@@ -180,7 +207,8 @@ type Middleware<T> = (next: IValidator<T>) => IValidator<T>;
 
 ### 表单值的格式化
 
-可以通过 `normalize` 和 `format` 参数来格式化 `Field` 的输入输出；使用自定义封装的表单组件时，可以为 `model` 设置 `normalizeBeforeSubmit` 属性，在调用 `form.getSubmitValue()`时可以获取到格式化之后的值
+- 可以通过 `normalize` 和 `format` 参数来格式化 `Field` 的输入输出
+- 也可以使用 `normalizeBeforeSubmit` 属性和 `form.getSubmitValue()` 方法，在不改变 model 内存储值的情况下修改表单提交的值
 
 <!-- demo-slot-11 -->
 
@@ -192,10 +220,12 @@ type Middleware<T> = (next: IValidator<T>) => IValidator<T>;
 
 - `Field` 组件对应 `FieldValue`，`View` 模式下指定一个 `name`；`Model` 模式下指定一个 `model`
 - `FieldSet` 组件对应 `FieldSetValue`，只有一个 `name` 参数；如果是 `Model` 模式下已经拿到对应的 model 对象了，那么直接将 `model.get(xxx)` 传给 `FieldValue` 组件即可
-- `useFieldArray` 对应 `useFieldArrayValue`，`View` 模式下指定一个 `name`；`Model` 模式下指定一个 `model`
-- `useFieldValue` 与 `FieldValue` 的能力相同，它提供了一种 hooks 的风格来获取表单值
+- `Form.useFieldArray` 对应 `useFieldArrayValue`，`View` 模式下指定一个 `name`；`Model` 模式下指定一个 `model`。注意，它只会监听 `children` 的增、删行为，不会监听 `children` 内部的变动
+- `Form.useFieldValue` 提供了一种 hooks 的风格来获取表单值（包括 FieldSet、FieldArray、Field），它可以深度监听表单值
+- `Form.useFormValue` 提供了一种 hooks 的风格来获取整个表单的值，它可以深度监听表单值
 
 <!-- demo-slot-12 -->
+<!-- demo-slot-20 -->
 
 ### 非 `Field` 层级的校验
 

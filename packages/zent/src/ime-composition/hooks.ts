@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useContext, useState, useRef, useCallback, useEffect } from 'react';
 import isChrome from '../utils/isChrome';
 import { IMECompositionContext } from './context';
 
@@ -30,20 +30,21 @@ export function createUseIMEComposition(
     onCompositionStartProp?: React.CompositionEventHandler,
     onCompositionEndProp?: React.CompositionEventHandler
   ): IUseIMECompositionResult<OnChange> {
-    const ctx = React.useContext(IMECompositionContext);
-    const isCompositionRef = React.useRef(false);
-    const [compositionValue, setCompositionValue] = React.useState(propValue);
+    const ctx = useContext(IMECompositionContext);
+    const isCompositionRef = useRef(false);
+    const [compositionValue, setCompositionValue] = useState(propValue);
 
-    const onChangeRef = React.useRef(onChangeProp);
-    const onCompositionStartRef = React.useRef(onCompositionStartProp);
-    const onCompositionEndRef = React.useRef(onCompositionEndProp);
-    React.useEffect(() => {
+    const onChangeRef = useRef(onChangeProp);
+    const onCompositionStartRef = useRef(onCompositionStartProp);
+    const onCompositionEndRef = useRef(onCompositionEndProp);
+    useEffect(() => {
       onChangeRef.current = onChangeProp;
       onCompositionStartRef.current = onCompositionStartProp;
       onCompositionEndRef.current = onCompositionEndProp;
     }, [onChangeProp, onCompositionStartProp, onCompositionEndProp]);
 
-    const onCompositionValueChange = React.useCallback(
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const onCompositionValueChange = useCallback(
       ((...args) => {
         if (isCompositionRef.current) {
           setCompositionValue(getEventValue(...args));
@@ -55,7 +56,7 @@ export function createUseIMEComposition(
       [onChangeRef]
     );
 
-    const onCompositionStart: React.CompositionEventHandler = React.useCallback(
+    const onCompositionStart: React.CompositionEventHandler = useCallback(
       e => {
         isCompositionRef.current = true;
         onCompositionStartRef.current?.(e);
@@ -63,7 +64,7 @@ export function createUseIMEComposition(
       [onCompositionStartRef]
     );
 
-    const onCompositionEnd: React.CompositionEventHandler = React.useCallback(
+    const onCompositionEnd: React.CompositionEventHandler = useCallback(
       e => {
         isCompositionRef.current = false;
         onCompositionEndRef.current?.(e);

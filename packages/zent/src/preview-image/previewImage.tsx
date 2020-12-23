@@ -1,4 +1,3 @@
-import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import createElement from '../utils/dom/createElement';
@@ -11,7 +10,6 @@ export interface IPreviewImageConfig {
   scaleRatio?: number;
   parentComponent?: React.ReactInstance;
   className?: string;
-  prefix?: string;
 }
 
 export function previewImage(options: IPreviewImageConfig = {}) {
